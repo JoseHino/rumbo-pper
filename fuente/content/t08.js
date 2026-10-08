@@ -1,0 +1,82 @@
+module.exports = {
+  id: 8,
+  title: "Abanderamiento y matrícula de recreo",
+  law: "Real Decreto 1435/2010 (abanderamiento y matriculación en listas 6.ª y 7.ª) · Real Decreto 685/2010 (permiso temporal de navegación)",
+  scope: "RD 1435/2010 completo · RD 685/2010 completo",
+  intro: "Cómo se abandera y matricula una embarcación de recreo, el régimen especial de las de 12 m o menos con marcado CE, el certificado de registro español-permiso de navegación y los permisos temporales para salones y pruebas.",
+  cards: [
+    { t: "Embarcación de recreo y auxiliar", b: "<b>Embarcación de recreo</b>: casco de <b>2,5 a 24 m</b> de eslora, para deporte u ocio, aunque se use con ánimo de lucro o para entrenamiento. <b>Auxiliar</b>: hasta <b>4 m</b> y <b>8 kW</b>, al servicio exclusivo de la principal y navegando solo en sus proximidades.", ref: "Art. 2.a-b RD 1435/2010" },
+    { t: "Artefactos flotantes o de playa", b: "Piraguas, kayaks y canoas sin motor; patines a pedal o con motor de <b>menos de 3,5 kW</b>; <b>motos náuticas</b>; tablas a vela; tablas deslizantes con motor; instalaciones flotantes fondeadas.", ref: "Art. 2.q", tip: "Pasajeros: todos a bordo excepto los menores de un año, el patrón y la tripulación." },
+    { t: "Indicativos", b: "<b>Indicativo de matrícula</b>: lista, provincia marítima, distrito y folio/año. <b>Indicativo de inscripción</b>: número secuencial que da el distrito a las embarcaciones de <b>12 m o menos</b> del régimen especial. <b>CIN</b>: número de identificación del fabricante (país, constructor, serie, mes y año).", ref: "Art. 2.f-g y p" },
+    { t: "Qué queda fuera", b: "No se aplica a embarcaciones con <b>permiso temporal de navegación</b> ni a las de lista sexta que lleven <b>más de 12 pasajeros</b>. No tienen que registrarse las históricas y tradicionales, las de regatas dedicadas solo a competición y los artefactos de playa.", ref: "Art. 3.2" },
+    { t: "Cómo se solicita", b: "El propietario (o su representante) lo pide en el <b>distrito marítimo</b> del puerto de matrícula elegido. Con <b>leasing</b> puede iniciarlo la entidad financiera o el arrendatario.", ref: "Art. 4.1" },
+    { t: "Preinscripción", b: "Un astillero o comercializadora española puede preinscribir la embarcación. Al venderla, la resolución sirve de <b>permiso provisional de navegación durante 6 meses</b> desde la transmisión, solo en el mar territorial y dentro de su categoría de diseño. La inscripción definitiva se pide en esos 6 meses.", ref: "Art. 4.3" },
+    { t: "Resolución del abanderamiento", b: "La dicta el <b>jefe de distrito marítimo en un mes</b>; sin resolución, se entiende <b>desestimada</b>. Cabe <b>recurso de alzada ante el Director General de la Marina Mercante</b>. No se exige inscripción en el Registro de Bienes Muebles.", ref: "Arts. 4.4, 12 y 13" },
+    { t: "Certificado de registro español-permiso de navegación", b: "Se expide a toda embarcación registrada con <b>tripulación no profesional</b>; recoge sus características y los datos del propietario. Si lleva tripulación profesional, necesita <b>rol</b>.", ref: "Art. 6" },
+    { t: "Nombre de la embarcación", b: "<b>Obligatorio si mide más de 12 m</b> y voluntario si mide 12 m o menos. Lo propone el interesado y lo asigna el distrito; siempre en alfabeto latino y pintado o fijado en amuras, aletas o popa.", ref: "Art. 7.1-7.3" },
+    { t: "Cómo se lleva la matrícula", b: "El indicativo de matrícula va en <b>ambas amuras</b>, lo más alto posible sobre la flotación, en color claro sobre casco oscuro y oscuro sobre casco claro. Las auxiliares llevan el indicativo de su principal seguido de «(Aux)».", ref: "Art. 7.4-7.5" },
+    { t: "Régimen especial: CE y 12 m o menos", b: "Si la embarcación y su motor tienen <b>marcado CE</b> y mide <b>12 m o menos</b> (salvo alta velocidad), está <b>exenta de abanderamiento, matriculación y despacho</b>. Pero antes de usarla necesita un <b>certificado de inscripción</b>, que el distrito expide en un máximo de <b>15 días</b>.", ref: "Art. 8.1 y 8.6" },
+    { t: "Límites del régimen especial", b: "Solo puede navegar por el <b>mar territorial español</b> y dentro de su categoría de diseño; debe enarbolar el pabellón español y llevar el indicativo de inscripción en ambas amuras (<b>blanco sobre casco oscuro, negro sobre claro</b>). Su certificado de inscripción sustituye al de navegabilidad.", ref: "Art. 8.2-8.7" },
+    { t: "Documentación con marcado CE", b: "Declaración de conformidad de embarcación y motores; título de propiedad; despacho de aduanas si viene de terceros países; baja en el registro anterior; pago del impuesto especial sobre determinados medios de transporte; tasas de inscripción y de ayudas a la navegación.", ref: "Art. 9" },
+    { t: "Sin marcado CE", b: "Las nuevas o de terceros países necesitan obtener el CE por evaluación posterior a su fabricación. Las de la UE pueden registrarse con un certificado de la DGMM anterior al <b>2 de junio de 1992</b>, una homologación, o, si se vendieron en la UE antes del <b>16 de junio de 1998</b>, un proyecto técnico y reconocimiento inicial.", ref: "Art. 10", tip: "Las de otro Estado de la UE con menos de 25 años y menos de 24 m se libran del proyecto si su modelo está homologado por la DGMM." },
+    { t: "Construidas por aficionados", b: "Pueden abanderarse en <b>lista séptima</b> con un proyecto firmado por técnico competente y reconocimiento inicial. Para venderlas o inscribirlas en <b>lista sexta</b> necesitan el marcado CE.", ref: "Art. 11" },
+    { t: "Sin licencia de estación de barco (LEB)", b: "Si se abandera sin resolver aún la LEB, la embarcación solo puede navegar por el <b>mar territorial</b> hasta obtenerla. Con la resolución se retiran el certificado de registro, el de navegabilidad y, en su caso, la LEB.", ref: "Art. 14" },
+    { t: "Renovación del certificado de registro", b: "Cada <b>5 años</b>, pidiéndola <b>3 meses antes</b> de que caduque. Si caduca, se <b>prohíbe navegar</b>. Se puede pedir en cualquier distrito, que resuelve en un mes. Hay que pedir uno nuevo si cambian los datos.", ref: "Art. 17.1-17.2" },
+    { t: "Venta y canje", b: "La transferencia la comunica el <b>vendedor</b> (y, si quiere, el comprador) en un máximo de <b>3 meses</b>. El certificado se canjea si está deteriorado o ilegible, y conserva la misma caducidad salvo que falten menos de 3 meses, que cuenta como renovación.", ref: "Arts. 17.3 y 18" },
+    { t: "Obligaciones de propietarios y usuarios", b: "El propietario solicita el registro y la baja y mantiene los documentos al día. <b>Propietarios y usuarios</b> responden de llevar a bordo la documentación.", ref: "Art. 16" },
+    { t: "Permiso temporal de navegación: para qué", b: "Para embarcaciones de recreo <b>no matriculadas</b> que se exhiben y prueban en salones náuticos, exposiciones o instalaciones de importadores, constructores, concesionarios o distribuidores <b>antes de venderse</b>, en aguas interiores y mar territorial. También para trasladarlas entre puertos españoles.", ref: "Art. 1 RD 685/2010", tip: "Si el traslado cruza aguas internacionales, el permiso vale como pasavante provisional." },
+    { t: "Permiso temporal: trámite", b: "Lo pide la <b>empresa importadora, constructora, concesionaria o distribuidora</b>, una solicitud por embarcación. Lo resuelve la <b>DGMM en 15 días</b> (silencio negativo) y vale <b>como máximo 6 meses</b>. Recurso de alzada ante el Secretario General de Transportes en un mes.", ref: "Arts. 2-6 RD 685/2010" },
+    { t: "Permiso temporal: a bordo", b: "Gobierno con la <b>titulación profesional o náutico-deportiva adecuada</b> a la eslora y la distancia. La <b>DGMM fija el número de tripulantes</b>. A bordo solo posibles compradores o personal de la empresa. Prohibido de noche, con mal tiempo o a más de <b>5 millas del puerto base</b> o <b>2 de la costa</b>.", ref: "Art. 8 RD 685/2010" },
+    { t: "Permiso temporal: prórrogas", b: "Las concede la DGMM por periodos iguales, hasta un máximo de <b>5 años</b> desde el primer permiso. A los <b>2 años y medio</b>, reconocimiento extraordinario. Si no resuelve en 15 días, la prórroga se concede <b>automáticamente</b>. El seguro de responsabilidad civil es obligatorio.", ref: "Arts. 10-11 RD 685/2010" }
+  ],
+  tf: [
+    { s: "Una embarcación de recreo tiene un casco de entre 2,5 y 24 metros de eslora.", a: true, e: "Art. 2.a RD 1435/2010." },
+    { s: "Una embarcación auxiliar puede medir hasta 6 metros.", a: false, e: "Hasta 4 m de eslora y 8 kW de potencia (art. 2.b)." },
+    { s: "Las motos náuticas son artefactos flotantes o de playa.", a: true, e: "Art. 2.q.iii." },
+    { s: "Si no hay resolución del abanderamiento en un mes, se entiende concedido.", a: false, e: "Se entiende desestimada la solicitud (art. 13.1)." },
+    { s: "El nombre es obligatorio en todas las embarcaciones de recreo.", a: false, e: "Solo en las de eslora superior a 12 m (art. 7.1)." },
+    { s: "Una embarcación de 10 m con marcado CE en casco y motor está exenta de abanderamiento, matriculación y despacho.", a: true, e: "Art. 8.1, aunque necesita certificado de inscripción." },
+    { s: "Las embarcaciones del régimen especial de 12 m o menos pueden navegar fuera del mar territorial si su categoría de diseño lo permite.", a: false, e: "Solo pueden navegar en el mar territorial español (art. 8.2)." },
+    { s: "El certificado de registro español-permiso de navegación se renueva cada cinco años.", a: true, e: "Art. 17.1." },
+    { s: "La renovación del certificado de registro se solicita un mes antes de su caducidad.", a: false, e: "Tres meses antes (art. 17.1)." },
+    { s: "La transferencia de titularidad debe comunicarla obligatoriamente el comprador.", a: false, e: "La comunica el vendedor; el comprador puede hacerlo potestativamente (art. 17.3)." },
+    { s: "El permiso temporal de navegación lo solicita el futuro comprador de la embarcación.", a: false, e: "Lo solicita la empresa importadora, constructora, concesionaria o distribuidora (art. 2 RD 685/2010)." },
+    { s: "El permiso temporal de navegación tiene una validez máxima de seis meses.", a: true, e: "Art. 5.2 RD 685/2010." },
+    { s: "Con permiso temporal no hace falta titulación para gobernar la embarcación.", a: false, e: "Hace falta titulación profesional o náutico-deportiva adecuada (art. 8.1 RD 685/2010)." },
+    { s: "Si la DGMM no resuelve una prórroga del permiso temporal en 15 días, se prorroga automáticamente.", a: true, e: "Art. 10.4 RD 685/2010." }
+  ],
+  pairs: [
+    { title: "Cada número con su regla", items: [["Eslora máxima de una auxiliar", "4 m"], ["Potencia máxima de una auxiliar", "8 kW"], ["Eslora a partir de la cual el nombre es obligatorio", "Más de 12 m"], ["Renovación del certificado de registro", "Cada 5 años"], ["Plazo del distrito para el certificado de inscripción", "15 días"]] },
+    { title: "Permiso temporal (RD 685/2010)", items: [["Quién lo solicita", "Importador, constructor, concesionario o distribuidor"], ["Quién lo concede", "Dirección General de la Marina Mercante"], ["Validez máxima", "6 meses"], ["Límite total con prórrogas", "5 años"], ["Distancia máxima en exhibiciones", "5 millas del puerto y 2 de la costa"]] }
+  ],
+  cloze: [
+    { s: "Los patines con motor de menos de ___ kW son artefactos de playa.", o: ["2", "3,5", "5", "8"], a: 1 },
+    { s: "La preinscripción sirve de permiso provisional de navegación durante ___ meses desde la venta.", o: ["3", "6", "9", "12"], a: 1 },
+    { s: "La venta de la embarcación se comunica en un plazo máximo de ___ meses.", o: ["1", "2", "3", "6"], a: 2 },
+    { s: "Quedan fuera del RD 1435/2010 las embarcaciones de lista sexta con más de ___ pasajeros.", o: ["6", "10", "12", "20"], a: 2 },
+    { s: "Con permiso temporal, a los ___ años desde el primer permiso hay un reconocimiento extraordinario.", o: ["1", "2,5", "3", "5"], a: 1 },
+    { s: "La DGMM resuelve el permiso temporal en ___ días.", o: ["10", "15", "30", "60"], a: 1 }
+  ],
+  quiz: [
+    { q: "Según el RD 1435/2010, el indicativo de matrícula de una embarcación de recreo se forma con:", o: ["El nombre y el puerto.", "La lista, la provincia marítima, el distrito marítimo y el folio/año.", "El número CIN.", "El MMSI y la lista."], a: 1, e: "Art. 2.f." },
+    { q: "¿Quién puede iniciar el abanderamiento de una embarcación adquirida mediante arrendamiento financiero con opción a compra?", o: ["Solo el vendedor.", "Tanto la entidad financiera como el arrendatario.", "Solo el astillero.", "La Capitanía de oficio."], a: 1, e: "Art. 4.1." },
+    { q: "Durante el permiso provisional de navegación de una embarcación preinscrita, esta puede navegar:", o: ["Sin límites.", "Solo en el mar territorial español y dentro de las zonas de su categoría de diseño.", "Solo en el puerto.", "Hasta 60 millas."], a: 1, e: "Art. 4.3." },
+    { q: "El certificado de registro español-permiso de navegación se expide a las embarcaciones registradas:", o: ["Con tripulación profesional.", "Dotadas de tripulación no profesional.", "Solo de lista sexta.", "Solo con marcado CE."], a: 1, e: "Art. 6." },
+    { q: "¿Dónde se puede pintar el nombre de una embarcación de recreo?", o: ["Solo en la popa.", "En las amuras, en las aletas o en la popa.", "En la vela mayor.", "En el espejo de popa y la cubierta."], a: 1, e: "Art. 7.3." },
+    { q: "El indicativo de inscripción de las embarcaciones del régimen especial (CE, ≤ 12 m) se pinta:", o: ["En la popa, en rojo.", "En ambas amuras, blanco sobre cascos oscuros y negro sobre cascos claros.", "Solo en la amura de estribor.", "En el costado, a elección del propietario."], a: 1, e: "Art. 8.4." },
+    { q: "Para el abanderamiento de embarcaciones sujetas al RD 1435/2010, la inscripción en el Registro de Bienes Muebles:", o: ["Es obligatoria.", "No es exigible en ningún caso.", "Solo es obligatoria en lista sexta.", "Solo es obligatoria si hay hipoteca."], a: 1, e: "Art. 12." },
+    { q: "Una embarcación construida por un aficionado que se quiera inscribir en la lista sexta debe:", o: ["Presentar solo un proyecto.", "Obtener previamente el marcado CE mediante evaluación de la conformidad posterior a su fabricación.", "Tener menos de 6 m.", "No puede inscribirse nunca."], a: 1, e: "Art. 11.2." },
+    { q: "Si se supera la fecha de validez del certificado de registro español-permiso de navegación sin renovarlo:", o: ["Se puede navegar con una multa.", "Caduca y queda prohibido realizar navegación alguna.", "Se prorroga automáticamente un año.", "Solo afecta a la navegación nocturna."], a: 1, e: "Art. 17.1." },
+    { q: "Según el RD 685/2010, ¿quién puede ir a bordo durante un desplazamiento entre puertos con permiso temporal?", o: ["Cualquier pasajero que pague.", "Solo personal adscrito a la empresa responsable de la embarcación.", "Familiares del comprador.", "Periodistas acreditados."], a: 1, e: "Art. 8.4." },
+    { q: "Contra las resoluciones del DGMM sobre permisos temporales de navegación cabe recurso de alzada ante:", o: ["El Capitán Marítimo.", "El Secretario General de Transportes, en un mes.", "El Ministro de Hacienda.", "El jefe de distrito."], a: 1, e: "Art. 6 RD 685/2010." },
+    { q: "La señal identificativa que se asigna a la embarcación con permiso temporal coincide con:", o: ["Su MMSI.", "Su número de identificación CIN.", "El nombre del salón náutico.", "Su NIF."], a: 1, e: "Art. 7 RD 685/2010." }
+  ],
+  official: {
+    "2026abr-1-11": "Art. 17.1 RD 1435/2010: renovación cada cinco años, pidiéndola tres meses antes de que caduque.",
+    "2026abr-1-12": "Art. 1.1 RD 685/2010: embarcaciones de recreo no matriculadas que se exhiben y prueban antes de su venta en aguas interiores y mar territorial.",
+    "2025nov-1-11": "Art. 7.1 RD 1435/2010: obligatorio para las de eslora superior a 12 metros y potestativo para las de 12 metros o menos.",
+    "2025nov-1-12": "Art. 8.1 RD 685/2010: el gobierno exige titulación profesional náutica o náutico-deportiva adecuada a la eslora y a la distancia de navegación.",
+    "2025abr-1-11": "Art. 8.2 RD 685/2010: la Dirección General de la Marina Mercante establece el número de tripulantes.",
+    "2025abr-1-12": "Art. 2.1 RD 685/2010: el procedimiento se inicia a instancia de la empresa importadora, constructora, concesionaria o distribuidora."
+  }
+};

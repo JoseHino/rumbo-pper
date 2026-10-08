@@ -1,0 +1,83 @@
+module.exports = {
+  id: 17,
+  title: "Desechos de buques en puerto",
+  law: "Real Decreto 128/2022, de 15 de febrero, sobre instalaciones portuarias receptoras de desechos de buques (transpone la Directiva UE 2019/883)",
+  scope: "RD 128/2022 completo (deroga el RD 1381/2002 y la Orden FOM/1392/2004)",
+  intro: "Qué son los desechos de buques, qué instalaciones debe tener cada puerto, cuándo hay que notificar y entregar los desechos, cómo se pagan (tarifa indirecta) y quién controla.",
+  update: "Tus apuntes desarrollan el RD 1381/2002, derogado en 2022. El temario 2026 pide el RD 128/2022, con conceptos nuevos que salen en el examen: «desechos de buques», «desechos pescados de manera no intencionada», tarifa indirecta y SafeSeaNet.",
+  cards: [
+    { t: "Objeto", b: "Proteger el medio marino de las <b>descargas de desechos</b> de los buques que usan los puertos españoles, mejorando la disponibilidad y el uso de <b>instalaciones portuarias receptoras</b> y la entrega de los desechos en ellas.", ref: "Art. 1" },
+    { t: "Desechos de buques", b: "Son <b>todos</b>: los <b>desechos generados</b> por buques, los <b>residuos de carga</b> y los <b>desechos pescados de manera no intencionada</b>. Legalmente se consideran <b>residuos</b> (Ley 22/2011).", ref: "Art. 2.i" },
+    { t: "Tipos de desechos", b: "<b>Generados por buques</b>: los producidos durante el servicio, de los anexos I, IV, V y VI de MARPOL. <b>Residuos de carga</b>: restos de carga en cubierta, bodegas o tanques (anexos I, II y V). <b>Pescados de forma no intencionada</b>: los que caen en las artes de pesca.", ref: "Art. 2.j, k y s" },
+    { t: "Otras definiciones", b: "<b>Buque</b>: cualquier buque, embarcación o artefacto apto para navegar. <b>Buque de recreo</b>: más de 24 m, menos de 3.000 GT y hasta 12 pasajeros. <b>Escalas frecuentes</b>: al menos una vez por quincena. <b>GISIS</b>: sistema de información de la OMI.", ref: "Art. 2" },
+    { t: "Ámbito", b: "Todos los buques, <b>de cualquier pabellón</b>, que hagan escala u operen en un puerto español, y todos los puertos donde hagan escala. Se <b>excluyen</b> los <b>buques de Estado</b> y los <b>afectos a servicios portuarios</b>.", ref: "Art. 3.1", tip: "En fondeaderos no se aplican la entrega obligatoria ni la tarifa indirecta si no hay operaciones comerciales y la escala dura menos de 7 días." },
+    { t: "Instalaciones en cada puerto", b: "Todos los puertos españoles tendrán instalaciones receptoras adecuadas para los buques que los usan, sin causarles <b>demoras innecesarias</b>. Las garantiza la <b>entidad gestora del puerto</b>. Quien sufra una demora injustificada puede reclamar indemnización.", ref: "Art. 4" },
+    { t: "Capacidad e informe de la Capitanía", b: "La entidad gestora fija las necesidades de recepción y pide informe preceptivo a la <b>Capitanía Marítima</b>, que es <b>vinculante</b> en la capacidad por operación y jornada, tipos y cantidades de desechos y seguridad.", ref: "Art. 5" },
+    { t: "Gestión y recogida separada", b: "Los gestores tratan los desechos de forma respetuosa con el medio ambiente y garantizan la <b>recogida separada</b> por categorías MARPOL para facilitar la reutilización y el reciclado. Los residuos de cocina del transporte internacional siguen normas sanitarias más estrictas.", ref: "Art. 6" },
+    { t: "Medios flotantes", b: "Los gestores que recogen con medios flotantes necesitan un <b>certificado de aptitud del Capitán Marítimo</b>, que se resuelve en <b>3 meses</b> (silencio negativo; alzada ante el DGMM) y vale mientras no cambien sus características.", ref: "Art. 7" },
+    { t: "Categorías de instalaciones", b: "Según lo que reciben: <b>MARPOL anexo I</b> (hidrocarburos), <b>II</b> (sustancias nocivas líquidas), <b>IV</b> (aguas sucias), <b>V</b> (basuras), <b>VI</b> (sustancias que agotan el ozono y residuos de lavado de gases) y <b>desechos pescados de forma no intencionada</b>.", ref: "Art. 8" },
+    { t: "Registro de servicios", b: "El gestor anota fecha y hora de inicio y fin, nombre, número OMI, bandera y tipo de buque, cantidad, naturaleza y destino de los desechos e incidencias. Registro informatizado consultable durante <b>5 años</b>.", ref: "Art. 9" },
+    { t: "Deficiencias de instalaciones", b: "Un buque español que encuentre deficiencias en una instalación extranjera lo comunica a la <b>DGMM</b> con el formulario de la OMI. Las quejas sobre puertos españoles las investigan las administraciones portuarias; <b>Puertos del Estado</b> es el punto de contacto nacional.", ref: "Art. 10" },
+    { t: "Planes de recepción y manipulación", b: "Cada entidad gestora aprueba un plan, con información pública y audiencia, y lo renueva <b>al menos cada 5 años</b> o si hay cambios significativos. Puertos vecinos pueden hacer planes conjuntos. Hay que publicar una <b>Guía de Usuario</b> en castellano e inglés, también en SafeSeaNet.", ref: "Arts. 11-13" },
+    { t: "Puertos exentos de plan", b: "Los <b>puertos pequeños no comerciales</b> con tráfico raro o escaso solo de recreo pueden quedar exentos si sus instalaciones están integradas en el <b>sistema municipal de residuos</b>, con informe vinculante de la Capitanía. Se comunican por SafeSeaNet.", ref: "Art. 14" },
+    { t: "Notificación previa de desechos", b: "La hace el naviero, armador, consignatario o capitán con el formulario del anexo II, por la <b>ventanilla única</b>: <b>24 horas antes</b> de llegar; en cuanto se conozca el puerto si es con menos antelación; o al salir del último puerto si el viaje dura menos de 24 h.", ref: "Art. 16.2", tip: "Se aplica a buques de 300 GT o más, salvo pesqueros, tradicionales y de recreo de menos de 45 m." },
+    { t: "Entrega obligatoria", b: "El capitán de un buque que hace escala en un puerto español <b>entrega todos sus desechos</b> en una instalación receptora <b>antes de salir</b>. El gestor le da un <b>recibo de entrega</b>, que se guarda a bordo <b>al menos 2 años</b> junto a los libros de registro.", ref: "Art. 17.1-17.4" },
+    { t: "Cuándo se puede salir sin entregar", b: "Si hay <b>capacidad de almacenamiento suficiente</b> hasta el siguiente puerto (autorizado por la Capitanía si el buque notifica), o si solo fondea menos de 7 días sin operaciones comerciales. La Capitanía exige la entrega si se desconoce el siguiente puerto o este no tiene instalaciones adecuadas.", ref: "Art. 17.5-17.6" },
+    { t: "Tarifa indirecta", b: "<b>Todos los buques que hacen escala la pagan</b>, entreguen o no desechos. Cubre los costes administrativos y al menos el <b>30 %</b> de los costes directos de recepción del año anterior. El objetivo es que no salga más barato tirar los desechos al mar.", ref: "Art. 18.2.a-b" },
+    { t: "Basuras sin coste adicional", b: "No se cobra tarifa directa por los desechos del <b>anexo V</b> (basuras), salvo que superen la capacidad de almacenamiento o lo notificado. Lo mismo para los desechos <b>pescados de forma no intencionada</b>. Los residuos de lavado de gases se pagan aparte.", ref: "Art. 18.2.c-g" },
+    { t: "Tarifas diferenciadas y reducciones", b: "Pueden variar según tipo y tamaño de buque, horario o peligrosidad de los desechos. Se reducen para el <b>transporte marítimo de corta distancia</b> y para buques que generan pocos desechos y los gestionan de forma sostenible.", ref: "Arts. 18.4-18.5 y 19" },
+    { t: "Exenciones por tráfico regular", b: "La <b>DGMM</b> puede eximir de notificar y entregar a buques en <b>tráfico regular con escalas frecuentes y regulares</b> si tienen un acuerdo de entrega y pago en un puerto de su ruta. Certificado de exención por <b>2 años como máximo</b>; resolución en 3 meses (silencio negativo).", ref: "Art. 21" },
+    { t: "Inspecciones e inmovilización", b: "La DGMM, a través de las Capitanías, inspecciona cada año al menos el <b>15 %</b> de los buques que hicieron escala, según su perfil de riesgo. Si un buque no entrega sus desechos, la Capitanía le <b>prohíbe salir</b> hasta que lo haga.", ref: "Arts. 22-23" },
+    { t: "Sanciones y comunicaciones", b: "Sancionan la <b>autoridad marítima</b> y las <b>autoridades portuarias</b> de los puertos de interés general, según el TRLPEMM. Todas las comunicaciones electrónicas van por <b>SafeSeaNet</b>, a través de <b>Puertos del Estado</b>.", ref: "Arts. 26-27" },
+    { t: "Pesqueros de 24 a 45 m", b: "También hacen notificación previa, salvo que vengan de caladero o puerto nacional o de puerto extranjero con menos de <b>4 días</b> de navegación.", ref: "DA 2.ª" }
+  ],
+  tf: [
+    { s: "Los desechos pescados de manera no intencionada forman parte de los «desechos de buques».", a: true, e: "Art. 2.i." },
+    { s: "El RD 128/2022 se aplica a los buques de Estado.", a: false, e: "Quedan excluidos, igual que los afectos a servicios portuarios (art. 3.1.a)." },
+    { s: "El RD 128/2022 se aplica a buques de cualquier pabellón que hagan escala en un puerto español.", a: true, e: "Art. 3.1.a." },
+    { s: "El informe de la Capitanía sobre la capacidad de las instalaciones receptoras es vinculante.", a: true, e: "Art. 5.2." },
+    { s: "El certificado de aptitud de los medios flotantes lo expide la Autoridad Portuaria.", a: false, e: "Lo expide el Capitán Marítimo (art. 7.1)." },
+    { s: "Los planes de recepción y manipulación de desechos se aprueban al menos cada cinco años.", a: true, e: "Art. 11.2." },
+    { s: "Una embarcación de recreo de 20 metros debe hacer la notificación previa de desechos.", a: false, e: "Están exceptuadas las embarcaciones y buques de recreo de menos de 45 m (art. 16.1)." },
+    { s: "La notificación previa se hace al menos 24 horas antes de la llegada si se conoce el puerto de escala.", a: true, e: "Art. 16.2.a." },
+    { s: "El recibo de entrega de desechos se conserva a bordo al menos dos años.", a: true, e: "Art. 17.4." },
+    { s: "Solo pagan la tarifa indirecta los buques que entregan desechos.", a: false, e: "La pagan todos los buques que hacen escala, entreguen o no desechos (art. 18.2.a)." },
+    { s: "La tarifa indirecta cubre al menos el 30 % de los costes directos de recepción.", a: true, e: "Art. 18.2.b." },
+    { s: "Las basuras del anexo V se cobran con tarifa directa según su volumen.", a: false, e: "No se cobra tarifa directa salvo que se supere la capacidad de almacenamiento o lo notificado (art. 18.2.c)." },
+    { s: "Las Capitanías inspeccionan cada año al menos el 15 % de los buques que hicieron escala.", a: true, e: "Art. 22.2." },
+    { s: "Las comunicaciones electrónicas del RD 128/2022 se basan en el sistema SafeSeaNet.", a: true, e: "Art. 27.1." }
+  ],
+  pairs: [
+    { title: "Categoría de instalación y lo que recibe", items: [["MARPOL anexo I", "Hidrocarburos"], ["MARPOL anexo II", "Sustancias nocivas líquidas"], ["MARPOL anexo IV", "Aguas sucias"], ["MARPOL anexo V", "Basuras"], ["MARPOL anexo VI", "Ozono y residuos de lavado de gases"]] },
+    { title: "Cada cifra con su regla", items: [["Antelación de la notificación previa", "24 horas"], ["Conservación del recibo de entrega", "2 años"], ["Parte mínima de costes directos en la tarifa indirecta", "30 %"], ["Buques inspeccionados al año", "15 %"], ["Validez máxima del certificado de exención", "2 años"]] },
+    { title: "Quién hace qué", items: [["Garantizar las instalaciones receptoras del puerto", "Entidad gestora del puerto"], ["Certificado de aptitud de medios flotantes", "Capitán Marítimo"], ["Exención por tráfico regular", "Dirección General de la Marina Mercante"], ["Punto de contacto nacional y SafeSeaNet", "Puertos del Estado"]] }
+  ],
+  cloze: [
+    { s: "La notificación previa de desechos se aplica, en general, a buques de ___ GT o más.", o: ["100", "300", "500", "1.000"], a: 1 },
+    { s: "Pesqueros, tradicionales y de recreo de menos de ___ m no hacen notificación previa.", o: ["24", "35", "45", "60"], a: 2 },
+    { s: "En fondeadero, la entrega no es obligatoria si la escala dura menos de ___ días sin operaciones comerciales.", o: ["3", "5", "7", "15"], a: 2 },
+    { s: "Los registros de servicios de recepción se conservan durante ___ años.", o: ["2", "3", "5", "10"], a: 2 },
+    { s: "Las escalas frecuentes son las de al menos una vez por ___.", o: ["semana", "quincena", "mes", "trimestre"], a: 1 },
+    { s: "Los desechos pescados de forma no intencionada se comunican cada ___ a la Dirección General de la Costa y el Mar.", o: ["mes", "trimestre", "semestre", "año"], a: 3 }
+  ],
+  quiz: [
+    { q: "Según el RD 128/2022, los «desechos generados por buques» son:", o: ["Solo los residuos de carga.", "Los producidos durante el servicio del buque, distintos de los residuos de carga, de los anexos I, IV, V y VI de MARPOL.", "Las capturas descartadas.", "Los residuos de los astilleros."], a: 1, e: "Art. 2.j." },
+    { q: "¿Quién garantiza la puesta a disposición de las instalaciones portuarias receptoras?", o: ["La Capitanía Marítima.", "La entidad gestora del puerto.", "El naviero.", "La Comunidad Autónoma siempre."], a: 1, e: "Art. 4.2." },
+    { q: "Las instalaciones portuarias receptoras deben tener capacidad para recoger los desechos:", o: ["Mezclados en un único contenedor.", "Por separado, según las categorías del Convenio MARPOL.", "Solo los oleosos.", "Solo los que pueda pagar el buque."], a: 1, e: "Art. 6." },
+    { q: "La Guía de Usuario de los planes de recepción estará disponible al menos en:", o: ["Castellano.", "Castellano e inglés.", "Inglés y francés.", "Las lenguas cooficiales."], a: 1, e: "Art. 12.2." },
+    { q: "Si el viaje hasta el puerto español dura menos de 24 horas, la notificación previa de desechos se hace:", o: ["Al atracar.", "A más tardar en el momento de salir del último puerto.", "48 horas antes.", "No hace falta."], a: 1, e: "Art. 16.2.c." },
+    { q: "Tras la entrega de desechos, el recibo lo expide:", o: ["La Capitanía.", "El gestor de la instalación portuaria receptora.", "El capitán del buque.", "Puertos del Estado."], a: 1, e: "Art. 17.2." },
+    { q: "La Capitanía exigirá la entrega de todos los desechos antes de salir cuando:", o: ["El buque sea de pabellón español.", "Se desconozca el siguiente puerto de escala o no conste que este tenga instalaciones adecuadas.", "El buque vaya a un puerto de la UE.", "Llueva."], a: 1, e: "Art. 17.6." },
+    { q: "Las tarifas de recepción de desechos se reducirán, entre otros casos, para:", o: ["Los cruceros de lujo.", "El transporte marítimo de corta distancia y los buques que generan cantidades limitadas de desechos y los gestionan de forma sostenible.", "Los petroleros de casco único.", "Los buques sin notificación previa."], a: 1, e: "Art. 18.5." },
+    { q: "¿Quién puede eximir a un buque en tráfico regular de las obligaciones de notificación y entrega?", o: ["La Autoridad Portuaria.", "La Dirección General de la Marina Mercante.", "El capitán del buque.", "Puertos del Estado."], a: 1, e: "Art. 21.1." },
+    { q: "Si una inspección acredita que un buque no ha entregado sus desechos, la Capitanía:", o: ["Le impone solo una multa.", "Le prohíbe salir del puerto hasta que los entregue, sin perjuicio del expediente sancionador.", "Le obliga a tirarlos en alta mar.", "No puede hacer nada."], a: 1, e: "Art. 23.1." }
+  ],
+  official: {
+    "2026abr-1-25": "Art. 2.i RD 128/2022: desechos de buques son los generados por el buque, los residuos de carga y los desechos pescados de manera no intencionada.",
+    "2026abr-1-26": "Art. 18.2.a RD 128/2022: todos los buques que hacen escala pagan la tarifa indirecta, entreguen o no desechos.",
+    "2025nov-1-25": "Art. 27.1 RD 128/2022: las comunicaciones e intercambio de información se basan en SafeSeaNet.",
+    "2025nov-1-26": "Art. 3.1.a RD 128/2022: se excluyen los buques de Estado y los afectos a la prestación de servicios portuarios.",
+    "2025abr-1-25": "Art. 2.i RD 128/2022: esa definición corresponde a «desechos de buques».",
+    "2025abr-1-26": "Art. 16.1 RD 128/2022: quedan exceptuados de la notificación previa pesqueros, tradicionales, embarcaciones y buques de recreo de eslora inferior a 45 metros."
+  }
+};
