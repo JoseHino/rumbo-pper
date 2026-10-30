@@ -61,11 +61,14 @@ VIEWS.sim = {
 function simIntro(p) {
   return `<div class="result"><div class="flag pop">${flagSvg('P')}</div><h2>${p.c ? 'Convocatoria de ' + esc(convName(p.c)) : 'Simulacro'}</h2>
 <p class="muted">${p.c ? 'Las 30 preguntas del test 01, en el orden y con las respuestas del examen original.' : 'Treinta preguntas nuevas cada vez, repartidas por temas con el peso que tienen en el examen.'}</p></div>
-<div class="panel"><dl class="dl"><dt>Preguntas</dt><dd>${S.items.length}, con 4 respuestas</dd><dt>Tiempo</dt><dd>${EXAM.minutes} minutos</dd><dt>Para aprobar</dt><dd>${EXAM.pass} aciertos (60 %)</dd><dt>Corrección</dt><dd>Al entregar</dd></dl></div>
+<div class="panel"><dl class="dl"><dt>Preguntas</dt><dd>${S.items.length}, con 4 respuestas</dd><dt>Tiempo</dt><dd>${EXAM.minutes} minutos</dd><dt>Para aprobar</dt><dd>${EXAM.pass} aciertos (60 %)</dd><dt>Corrección</dt><dd>${P.instant ? 'Al momento: ves si aciertas en cada pregunta' : 'Al entregar, como en el examen real'}</dd></dl></div>
+<div class="row" style="margin-top:14px"><span class="grow">Corrección</span><div class="seg" role="group" aria-label="Corrección">${[[1, 'Al momento'], [0, 'Al entregar']].map(([k, n]) => `<button class="${!!P.instant === !!k ? 'on' : ''}" data-act="simMode" data-k="${k}" aria-pressed="${!!P.instant === !!k}">${n}</button>`).join('')}</div></div>
 <button class="btn mag wide" style="margin-top:16px" data-act="simStart">Zarpar</button>`;
 }
+ACT.simMode = d => { P.instant = d.k === '1'; save(); rerender(); };
 ACT.simStart = () => {
   S.started = true;
+  S.inst = !!P.instant;
   S.t0 = Date.now();
   S.endAt = S.t0 + EXAM.minutes * 60000;
   S.clock = fmtClock(S.endAt - Date.now());
@@ -83,17 +86,32 @@ function simQuestion() {
   const it = S.items[S.i];
   const n = S.items.length;
   const answered = S.items.filter(x => x.pick != null).length;
+  const shown = S.inst && it.pick != null;
+  const good = shown && it.pick === it.ans;
   return `
 <div class="prog"><span>${S.i + 1}/${n}</span><div class="bar"><i style="width:${pct(answered, n)}%"></i></div><span>${answered} resp.</span></div>
 <p class="q" style="margin-top:14px">${esc(it.q.q)}</p>
-${it.order.map((_, j) => optBtn(it, j, 'simPick', false)).join('')}
+${it.order.map((_, j) => optBtn(it, j, 'simPick', shown)).join('')}
+${shown ? `<div class="fb ${good ? '' : 'bad'}" id="fb" aria-live="polite"><span class="h">${good ? 'Correcto' : `Incorrecto · la buena es la ${'ABCD'[it.ans]}`}</span>${it.q.e || ''}</div>` : ''}
 <div class="btnrow"><button class="btn ghost" data-act="simPrev" ${S.i === 0 ? 'disabled' : ''}>Anterior</button><button class="btn" data-act="simNext" ${S.i === n - 1 ? 'disabled' : ''}>Siguiente</button></div>
 <div class="label">Hoja de respuestas</div>
-<div class="qgrid">${S.items.map((x, k) => `<button class="${x.pick != null ? 'ans' : ''} ${k === S.i ? 'cur' : ''}" data-act="simJump" data-k="${k}" aria-label="Pregunta ${k + 1}${x.pick != null ? ', respondida' : ''}">${k + 1}</button>`).join('')}</div>
+<div class="qgrid">${S.items.map((x, k) => `<button class="${x.pick == null ? '' : !S.inst ? 'ans' : x.pick === x.ans ? 'ok' : 'bad'} ${k === S.i ? 'cur' : ''}" data-act="simJump" data-k="${k}" aria-label="Pregunta ${k + 1}${x.pick != null ? ', respondida' : ''}">${k + 1}</button>`).join('')}</div>
 <button class="btn mag wide" data-act="simAsk">Entregar examen</button>
-<p class="small muted" style="text-align:center">Toca otra vez una respuesta marcada para dejarla en blanco.</p>`;
+<p class="small muted" style="text-align:center">${S.inst ? `Llevas ${S.items.filter(x => x.pick != null && x.pick === x.ans).length} de ${answered} acertadas. Con corrección al momento la respuesta no se puede cambiar.` : 'Toca otra vez una respuesta marcada para dejarla en blanco.'}</p>`;
 }
-ACT.simPick = d => { const it = S.items[S.i]; const j = +d.j; it.pick = it.pick === j ? null : j; rerender(); };
+ACT.simPick = d => {
+  const it = S.items[S.i]; const j = +d.j;
+  if (S.inst) {
+    if (it.pick != null) return;
+    it.pick = j;
+    if (j !== it.ans) buzz(70);
+    rerender();
+    const fb = document.getElementById('fb');
+    if (fb && fb.getBoundingClientRect().bottom > window.innerHeight) fb.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+  it.pick = it.pick === j ? null : j; rerender();
+};
 ACT.simPrev = () => { if (S.i > 0) { S.i--; render(true); } };
 ACT.simNext = () => { if (S.i < S.items.length - 1) { S.i++; render(true); } };
 ACT.simJump = d => { S.i = +d.k; render(true); };

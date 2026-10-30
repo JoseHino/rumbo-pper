@@ -37,7 +37,7 @@ function buzz(ms) { try { if (navigator.vibrate) navigator.vibrate(ms); } catch 
 
 /* --- progreso --- */
 let P = null;
-function fresh() { return { v: 1, ts: 0, xp: 0, days: {}, tp: {}, L: {}, sims: [], badges: {}, theme: 'auto', st: { ans: 0, ok: 0, rev: 0 } }; }
+function fresh() { return { v: 1, ts: 0, xp: 0, days: {}, tp: {}, L: {}, sims: [], badges: {}, theme: 'auto', instant: true, st: { ans: 0, ok: 0, rev: 0 } }; }
 function normalize(o) {
   const f = fresh();
   if (!o || typeof o !== 'object' || o.v !== 1) return f;

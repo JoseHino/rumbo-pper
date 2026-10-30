@@ -68,6 +68,18 @@ async function run() {
     expect(document.querySelectorAll('.qgrid button.ok').length === 25, 'grid');
     ACT.simSee({ k: '27' }); expect(S.ri === 27, 'see');
   });
+  await step('instant correction', () => {
+    tab('simMenu'); click('.panel [data-v="sim"]');
+    click('[data-act="simMode"][data-k="0"]'); expect(P.instant === false, 'mode off');
+    click('[data-act="simMode"][data-k="1"]'); expect(P.instant === true, 'mode on');
+    ACT.simStart(); const it = S.items[0];
+    ACT.simPick({ j: String((it.ans + 1) % 4) });
+    expect(document.querySelector('#fb.bad') && document.querySelector('.opt.ok'), 'no feedback');
+    ACT.simPick({ j: String(it.ans) }); expect(it.pick === (it.ans + 1) % 4, 'changed after reveal');
+    expect(document.querySelector('.qgrid button.bad'), 'grid not marked');
+    ACT.simNext(); expect(!document.getElementById('fb'), 'feedback before answering');
+    S.guard = null; clearTimers(); tab('simMenu');
+  });
   await step('real exam replica keeps order', () => {
     tab('simMenu'); click('[data-v="sim"][data-c="2026abr"]');
     expect(S.items[0].q.id === '2026abr-1-01' && S.items.every(it => it.order.join() === '0,1,2,3'), 'order');
