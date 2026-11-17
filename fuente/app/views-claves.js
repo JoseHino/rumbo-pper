@@ -19,27 +19,47 @@ function qLine(q, showConv = true) {
 <div class="cq-q">${esc(q.q)}</div><div class="cq-a"><span aria-hidden="true">✓</span> ${esc(q.o[q.a])}</div></li>`;
 }
 
+const MES = { Enero: 'ene', Febrero: 'feb', Marzo: 'mar', Abril: 'abr', Mayo: 'may', Junio: 'jun', Julio: 'jul', Agosto: 'ago', Septiembre: 'sep', Octubre: 'oct', Noviembre: 'nov', Diciembre: 'dic' };
+const convShort = name => { const [m, y] = String(name).split(' '); return (MES[m] || m) + ' ' + String(y).slice(2); };
+const stemShort = s => {
+  let x = s.replace(/^(Según|De acuerdo( con| al?)?|Conforme( al?| con)?|A efectos( de| del)?|En virtud del?|Atendiendo a|A tenor del?|De conformidad con|Regulado en|Tal y como establece|En aplicación del?|Respecto a lo dispuesto en)\b[^?¿:]*?(2\/2011|14\/2014|\d{2,4}\/\d{4}|Código Civil|MARPOL( 73\/78)?|1979|1989|de 2000|Mercante|marítimas|españoles|recreo|deportivas|buques)(, de \d+ de \w+)?[^,?¿]*?,\s*/i, '');
+  for (let i = 0; i < 4; i++) {
+    x = x.replace(/^(aprobad[oa]s? por|por (el|la) que|que regula|que se regula|sobre|de \d+ de \w+|de Navegación Marítima)\b[^,?¿]*?,\s*/i, '');
+    x = x.replace(/^de la navegación y de la vida humana en la mar[^?¿]*?deportivas[,:]\s*/i, '');
+    x = x.replace(/^El Real Decreto \d+\/\d+, sobre [^?¿]*?carga,\s*/i, '');
+  }
+  x = x.replace(/^¿(\S)/, (m, c) => '¿' + c.toUpperCase());
+  x = x.charAt(0).toUpperCase() + x.slice(1);
+  return x.length > 110 ? x.slice(0, 107).replace(/\s+\S*$/, '') + '…' : x;
+};
+const ansShort = s => (s.length > 90 ? s.slice(0, 87).replace(/\s+\S*$/, '') + '…' : s);
+
 VIEWS.claves = {
   title: 'Lo que siempre cae',
   render() {
-    const reps = DATA.repeats || [];
     const nRep = clavePickIds('rep').length;
     const nDoble = clavePickIds('doble').length;
     return `
 <div class="panel" style="margin-top:16px">
-  <p class="lead" style="margin:0">De ${nConv} exámenes oficiales (2017-2026): <b>cada número de pregunta es siempre de la misma norma</b>, y muchas preguntas vuelven con otras palabras. Aquí tienes, en el orden del examen, lo que han preguntado de verdad.</p>
-  <div class="kpis"><div><b>18</b><span>aciertos para aprobar</span></div><div><b>22</b><span>preguntas de los 11 temas que valen 2</span></div><div><b>${reps.length}</b><span>preguntas que ya se han repetido</span></div></div>
-  <button class="btn mag wide" data-act="go" data-v="reviewRun" data-k="rep">Practicar las repetidas (${nRep})</button>
-  <button class="btn ghost wide" style="margin-top:10px" data-act="go" data-v="reviewRun" data-k="doble">Practicar los temas que valen 2 (${nDoble})</button>
-  <p class="small muted" style="margin:10px 0 0">Las prácticas usan solo preguntas oficiales que siguen valiendo hoy, en tandas de 20, empezando por las que menos dominas.</p>
+  <p class="lead" style="margin:0">En ${nConv} exámenes oficiales (2017-2026) <b>cada número de pregunta cae siempre en la misma norma</b>. Debajo tienes, número a número, qué suele preguntar y qué preguntas ya se han repetido, con los exámenes en que salieron.</p>
+  <div class="btnrow" style="margin-top:12px"><button class="btn mag" data-act="go" data-v="reviewRun" data-k="rep">Practicar repetidas (${nRep})</button><button class="btn ghost" data-act="go" data-v="reviewRun" data-k="doble">Temas que valen 2 (${nDoble})</button></div>
 </div>
-<div class="label">El examen, pregunta a pregunta</div>
-<div class="stack">${TOPICS.map(t => {
+${TOPICS.map(t => {
   const c = CLAVE[t.id] || {};
-  const nr = reps.filter(r => r.t === t.id).length;
-  return `<button class="stage ckey" data-act="go" data-v="clave" data-t="${t.id}"><span class="cpos">${esc(c.pos || '')}</span><span class="grow"><b>${esc(t.title)}</b><span class="s">${esc(c.law || t.law)}</span><span class="s"><span class="tag ${t.weight === 2 ? '' : 'off'}">${t.weight === 2 ? '2 preguntas' : '1 pregunta'}</span> ${offOf(t.id).length} oficiales${nr ? ` · ${plural(nr, 'repetida', 'repetidas')}` : ''}</span></span><span class="muted" aria-hidden="true">›</span></button>`;
-}).join('')}</div>
-<p class="small muted">Números de pregunta de las convocatorias desde octubre de 2019; en 2017-2019 iban una o dos posiciones desplazados. Las preguntas de normas que han cambiado llevan aviso rojo, ámbar o gris, como en el simulacro.</p>`;
+  const groups = repOf(t.id);
+  return `<section class="panel cblock">
+  <div class="chead"><span class="cpos">${esc(c.pos || '')}</span><div class="grow"><b>${esc(t.title)}</b><div class="small muted">${esc(c.law || t.law)} · ${t.weight === 2 ? '<b class="w2">2 preguntas</b>' : '1 pregunta'}</div></div></div>
+  <div class="csub">Suele preguntar</div>
+  <ul class="csuele">${(c.s || []).map(x => `<li>${esc(x)}</li>`).join('')}</ul>
+  <div class="csub">${groups.length ? `Se han repetido (${groups.length})` : 'Se han repetido'}</div>
+  ${groups.length ? `<div class="creps">${groups.map(g => {
+    const q0 = g.qs[0];
+    return `<details class="crep"><summary><span class="grow"><span class="crep-q">${esc(stemShort(q0.q))}</span><span class="crep-a">✓ ${esc(ansShort(q0.o[q0.a]))}</span><span class="cchips">${g.qs.map(q => `<span class="cchip${q.av && q.av.n === 'derogada' ? ' old' : ''}" title="${esc(q.convName)}">${esc(convShort(q.convName))}</span>`).join('')}</span></span></summary><ul class="cqs">${g.qs.map(q => qLine(q)).join('')}</ul></details>`;
+  }).join('')}</div>` : '<p class="small muted" style="margin:2px 0 0">Ninguna repetida todavía: cada examen ha preguntado algo distinto.</p>'}
+  <button class="clink" data-act="go" data-v="clave" data-t="${t.id}">Datos clave, todas sus preguntas y práctica ›</button>
+</section>`;
+}).join('')}
+<p class="small muted">Números de pregunta de las convocatorias desde octubre de 2019 (en 2017-2019 iban una o dos posiciones desplazados). Toca una repetida para ver cómo se preguntó en cada examen. Las etiquetas tachadas son de normas derogadas.</p>`;
   },
 };
 
