@@ -194,7 +194,11 @@ VIEWS.review = {
 <div class="prose small muted"><p>Cada pregunta que respondes en los exámenes de tema, simulacros y repasos entra en una de cinco cajas. Si la fallas vuelve a la caja 1 y te la pregunto hoy mismo; si la aciertas sube de caja y tarda más en volver: 1, 3, 7 y 16 días. Así repasas justo lo que se te olvida.</p></div>`;
   },
 };
-function pickReview(k) {
+function pickReview(k, t) {
+  if (k === 'rep' || k === 'tema' || k === 'doble') {
+    const box = q => (P.L[q.id] ? P.L[q.id][0] : 0);
+    return shuffle(clavePickIds(k, t)).sort((a, b) => box(a) - box(b)).slice(0, 20);
+  }
   if (k === 'bank') {
     const box = q => (P.L[q.id] ? P.L[q.id][0] : 0);
     return shuffle(QUESTIONS.filter(q => q.src === 'oficial')).sort((a, b) => box(a) - box(b)).slice(0, 20);
@@ -203,14 +207,14 @@ function pickReview(k) {
   return shuffle(ids).sort((a, b) => P.L[a][0] - P.L[b][0]).slice(0, 20).map(id => QBY[id]);
 }
 VIEWS.reviewRun = {
-  tab: 'review',
-  title: p => (p.k === 'bank' ? 'Banco oficial' : p.k === 'fails' ? 'Repaso de fallos' : 'Repaso'),
+  tab: p => (['rep', 'tema', 'doble'].includes(p.k) ? 'claves' : 'review'),
+  title: p => (p.k === 'rep' ? 'Las que se repiten' : p.k === 'doble' ? 'Temas que valen 2' : p.k === 'tema' ? 'Oficiales del tema ' + p.t : p.k === 'bank' ? 'Banco oficial' : p.k === 'fails' ? 'Repaso de fallos' : 'Repaso'),
   render(p) {
-    if (!S.items) Object.assign(S, { kind: 'review', items: pickReview(p.k).map(q => present(q)), i: 0, ok: 0 });
+    if (!S.items) Object.assign(S, { kind: 'review', items: pickReview(p.k, p.t).map(q => present(q)), i: 0, ok: 0 });
     if (!S.items.length) return `<div class="empty">${ICONS.anchor}<p>No hay preguntas pendientes. Vuelve mañana o haz un examen de tema.</p></div>`;
     if (S.end) {
       const sc = pct(S.ok, S.items.length);
-      const more = p.k === 'bank' || (p.k === 'due' ? dueIds().length : Object.keys(P.L).filter(id => P.L[id][0] === 1).length);
+      const more = ['bank', 'rep', 'tema', 'doble'].includes(p.k) || (p.k === 'due' ? dueIds().length : Object.keys(P.L).filter(id => P.L[id][0] === 1).length);
       return `<div class="result"><div class="flag pop">${flagSvg(sc >= 60 ? 'C' : 'R')}</div><h2>Repaso terminado</h2><div class="big">${S.ok}<small>/${S.items.length}</small></div><p class="muted">${sc} % de aciertos.</p></div>
 ${quizReview(S.items)}
 <div class="stack" style="margin-top:16px">${more ? '<button class="btn wide" data-act="retry">Otra tanda</button>' : ''}<button class="btn ghost wide" data-act="back">Volver</button></div>`;

@@ -201,8 +201,8 @@ function go(v, p = {}) { leave(() => { clearTimers(); S = {}; NAV.stack.push({ v
 function swap(v, p = {}) { clearTimers(); S = {}; NAV.stack[NAV.stack.length - 1] = { v, p }; render(true); }
 function back() { leave(() => { clearTimers(); S = {}; if (NAV.stack.length > 1) NAV.stack.pop(); render(true); }); }
 function tab(v) { leave(() => { clearTimers(); S = {}; NAV.stack = [{ v, p: {} }]; render(true); }); }
-const TABS = [['home', 'Ruta', 'route'], ['review', 'Repaso', 'review'], ['simMenu', 'Simulacro', 'sim'], ['log', 'Bitácora', 'log'], ['info', 'Examen', 'info']];
-function tabOf(v) { return (VIEWS[v] && VIEWS[v].tab) || v; }
+const TABS = [['home', 'Ruta', 'route'], ['claves', 'Claves', 'key'], ['review', 'Repaso', 'review'], ['simMenu', 'Simulacro', 'sim'], ['log', 'Bitácora', 'log'], ['info', 'Examen', 'info']];
+function tabOf(v, p) { const t = VIEWS[v] && VIEWS[v].tab; return (typeof t === 'function' ? t(p || {}) : t) || v; }
 function topChip() { return S.clock ? `<span class="chip clock" id="clock">${S.clock}</span>` : `<span class="chip" id="xpchip" title="Millas navegadas">${nf(P.xp)} mi</span>`; }
 function updateTopChip() { const c = document.getElementById('xpchip'); if (c) c.textContent = nf(P.xp) + ' mi'; }
 function render(scrollTop) {
@@ -215,7 +215,7 @@ function render(scrollTop) {
     `<h1>${esc(title)}</h1>` + topChip();
   document.getElementById('view').innerHTML = html;
   const due = dueIds().length;
-  const on = tabOf(c.v);
+  const on = tabOf(c.v, c.p);
   document.getElementById('tabs').innerHTML = TABS.map(([v, label, ic]) =>
     `<button data-act="tab" data-v="${v}" class="${on === v ? 'on' : ''}" ${on === v ? 'aria-current="page"' : ''}>${ICONS[ic]}<span>${label}</span>${v === 'review' && due ? `<span class="badge">${due > 99 ? '99+' : due}</span>` : ''}</button>`).join('');
   if (V.after) V.after(c.p);

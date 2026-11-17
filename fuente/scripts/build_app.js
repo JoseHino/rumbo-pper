@@ -38,7 +38,7 @@ data.replicas.forEach(r => console.log('replica', r.conv, r.ids.length, 'missing
 const LS = String.fromCharCode(0x2028), PS = String.fromCharCode(0x2029);
 const BS = String.fromCharCode(92);
 const json = JSON.stringify(data).replace(/</g, BS + 'u003c').split(LS).join(BS + 'u2028').split(PS).join(BS + 'u2029');
-const js = ['flags.js', 'core.js', 'views-home.js', 'views-games.js', 'views-sim.js', 'views-log.js', 'main.js'].map(f => rd('app/' + f)).join('\n');
+const js = ['flags.js', 'core.js', 'views-home.js', 'views-games.js', 'views-sim.js', 'views-claves.js', 'views-log.js', 'main.js'].map(f => rd('app/' + f)).join('\n');
 if (/<\/script/i.test(js)) { console.log('script contains </script'); process.exit(1); }
 const fonts = `<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

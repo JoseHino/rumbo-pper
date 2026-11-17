@@ -68,6 +68,27 @@ for (const q of old) {
   official.push(o);
 }
 OLD_CONVS.forEach(c => replicas.push(c));
+// «Claves»: groups of official questions that came up in two or more convocatorias (same fact, other wording)
+const claves = require(path.join(base, 'claves.js'));
+const repeats = [];
+{
+  const words = x => x.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9 ]/g, ' ').split(/\s+/).filter(w => w.length > 3);
+  for (let t = 1; t <= 19; t++) {
+    const qs = official.filter(q => q.t === t).map(q => ({ q, w: words(q.q + ' ' + q.o[q.a]) }));
+    const df = {}; qs.forEach(x => new Set(x.w).forEach(w => { df[w] = (df[w] || 0) + 1; }));
+    qs.forEach(x => { x.s = new Set(x.w.filter(w => df[w] <= qs.length * 0.25)); });
+    const p = qs.map((_, i) => i); const f = i => (p[i] === i ? i : (p[i] = f(p[i])));
+    for (let i = 0; i < qs.length; i++) for (let j = i + 1; j < qs.length; j++) {
+      if (qs[i].q.conv === qs[j].q.conv) continue;
+      let n = 0; qs[i].s.forEach(w => { if (qs[j].s.has(w)) n++; });
+      if (n / (qs[i].s.size + qs[j].s.size - n) >= 0.42) p[f(i)] = f(j);
+    }
+    const g = {}; qs.forEach((x, i) => { (g[f(i)] = g[f(i)] || []).push(x.q.id); });
+    Object.values(g).forEach(ids => { const convs = new Set(ids.map(id => id.split('-')[0])); if (convs.size >= 2) repeats.push({ t, n: convs.size, ids }); });
+  }
+  repeats.sort((a, b) => b.n - a.n || a.t - b.t);
+  if (claves.length !== 19) problems.push('claves: expected 19 topics');
+}
 // practice questions
 const practice = [];
 let pid = 0;
@@ -112,7 +133,9 @@ const data = {
   exam: { date: '2026-11-21', enrolFrom: '2026-10-15', enrolTo: '2026-10-31', place: 'Facultad de Derecho de la Universidad Autónoma de Madrid', questions: 30, options: 4, minutes: 60, pass: 18 },
   topics: topics.map(t => ({ id: t.id, title: t.title, law: t.law, scope: t.scope, intro: t.intro, update: t.update || null, weight: WEIGHT[t.id], cards: t.cards, tf: t.tf, pairs: t.pairs, cloze: t.cloze })),
   questions: [...official, ...practice],
-  replicas
+  replicas,
+  claves,
+  repeats
 };
 fs.writeFileSync(out, JSON.stringify(data));
 console.log('written', out, (fs.statSync(out).size / 1024).toFixed(1) + ' KB');
