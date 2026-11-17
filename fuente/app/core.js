@@ -30,6 +30,9 @@ const fmtDate = (k, opt) => { const [y, m, d] = k.split('-').map(Number); return
 const pct = (a, b) => (b ? Math.round((100 * a) / b) : 0);
 const plural = (n, one, many) => `${nf(n)} ${n === 1 ? one : many}`;
 function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+const AVISO = { derogada: ['!', 'Puede que ya no valga'], ojo: ['i', 'Norma cambiada'], fuera: ['–', 'Fuera del temario 2026'] };
+function avisoHtml(q) { if (!q || !q.av) return ''; const [ic, tt] = AVISO[q.av.n] || AVISO.ojo; return `<div class="aviso ${q.av.n}" role="note"><span class="ic" aria-hidden="true">${ic}</span><span><b>${tt}.</b> ${esc(q.av.x)}</span></div>`; }
+const avCls = q => (q && q.av ? ' av-' + q.av.n : '');
 function present(q, keepOrder) { const order = keepOrder ? [0, 1, 2, 3] : shuffle([0, 1, 2, 3]); return { q, order, ans: order.indexOf(q.a), pick: null }; }
 function starsFor(p) { return p >= 100 ? 3 : p >= 80 ? 2 : p >= 60 ? 1 : 0; }
 function starsHtml(n, max = 3) { let s = ''; for (let i = 0; i < max; i++) s += `<i class="${i < n ? 'on' : ''}">★</i>`; return `<span class="stars" aria-label="${n} de ${max} estrellas">${s}</span>`; }

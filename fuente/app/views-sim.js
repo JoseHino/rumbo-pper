@@ -33,9 +33,10 @@ VIEWS.simMenu = {
 <div class="label">Exámenes oficiales</div>
 ${DATA.replicas.map(r => {
   const b = simBest(r.conv);
-  return `<button class="stage ${b != null && b >= EXAM.pass ? 'done' : ''}" data-act="go" data-v="sim" data-c="${r.conv}"><span class="n" style="font-size:12px;font-style:normal;font-family:var(--f-mono)">${b != null && b >= EXAM.pass ? '✓' : r.name.slice(0, 3)}</span><span class="grow"><b>${esc(r.name)}</b><span class="s">Test 01 · orden y respuestas originales${b != null ? ` · mejor ${b}/30` : ''}</span></span><span class="muted" aria-hidden="true">›</span></button>`;
+  return `<button class="stage ${b != null && b >= EXAM.pass ? 'done' : ''}" data-act="go" data-v="sim" data-c="${r.conv}"><span class="n" style="font-size:12px;font-style:normal;font-family:var(--f-mono)">${b != null && b >= EXAM.pass ? '✓' : r.name.slice(0, 3)}</span><span class="grow"><b>${esc(r.name)}</b><span class="s">Test 0${r.test || 1} · ${r.ids.length} preguntas${r.ids.length < 30 ? ' (sin las anuladas)' : ''}${(n => n ? ` · <span class="avc">${n} con aviso</span>` : '')(r.ids.filter(id => QBY[id] && QBY[id].av && QBY[id].av.n !== 'fuera').length)}${b != null ? ` · mejor ${b}/${r.ids.length}` : ''}</span></span><span class="muted" aria-hidden="true">›</span></button>`;
 }).join('')}
-<p class="small muted">Cada convocatoria publicó dos modelos de test con las mismas 30 preguntas en distinto orden; aquí tienes el modelo 01 tal cual se examinó. Esas preguntas también aparecen en el examen de cada tema y en el repaso.</p>
+<p class="small muted">Convocatorias de 2017 a 2026 publicadas por la Dirección General de la Marina Mercante, con su plantilla oficial de respuestas. Cada una publicó dos modelos con las mismas preguntas en distinto orden; aquí tienes uno tal cual se examinó (el 02 en diciembre de 2020, porque del 01 no se conserva la plantilla). Faltan octubre de 2022, abril y noviembre de 2023 y marzo de 2017, que ya no se encuentran o no tienen respuestas publicadas.</p>
+<p class="small muted">Las preguntas de normas que han cambiado desde entonces llevan un aviso: <b class="avk derogada">rojo</b> si la respuesta puede no valer hoy, <b class="avk ojo">ámbar</b> si la norma cambió pero la respuesta sigue valiendo y <b class="avk fuera">gris</b> si ya no está en el temario de 2026.</p>
 <div class="label">Historial</div>
 ${hist.length ? `<div class="panel"><ul class="list">${hist.map(s => `<li><span class="grow"><b>${s.m === 'sim' ? 'Simulacro' : 'Examen ' + esc(convName(s.m))}</b><br><span class="small muted">${fmtDate(s.d, { day: 'numeric', month: 'short' })} · ${Math.round(s.sec / 60)} min</span></span><span class="mono">${s.s}/${s.n}</span><span class="tag ${s.s >= EXAM.pass ? 'ok' : 'off'}">${s.s >= EXAM.pass ? 'Apto' : 'No apto'}</span></li>`).join('')}</ul></div>` : '<p class="muted small">Todavía no has hecho ningún simulacro.</p>'}`;
   },
@@ -60,7 +61,7 @@ VIEWS.sim = {
 };
 function simIntro(p) {
   return `<div class="result"><div class="flag pop">${flagSvg('P')}</div><h2>${p.c ? 'Convocatoria de ' + esc(convName(p.c)) : 'Simulacro'}</h2>
-<p class="muted">${p.c ? 'Las 30 preguntas del test 01, en el orden y con las respuestas del examen original.' : 'Treinta preguntas nuevas cada vez, repartidas por temas con el peso que tienen en el examen.'}</p></div>
+<p class="muted">${p.c ? `Las ${S.items.length} preguntas del test 0${(DATA.replicas.find(x => x.conv === p.c) || {}).test || 1}, en el orden y con las respuestas del examen original.${S.items.some(x => x.q.av && x.q.av.n !== 'fuera') ? ' Algunas son de normas que han cambiado: llevan un aviso encima del enunciado.' : ''}` : 'Treinta preguntas nuevas cada vez, repartidas por temas con el peso que tienen en el examen.'}</p></div>
 <div class="panel"><dl class="dl"><dt>Preguntas</dt><dd>${S.items.length}, con 4 respuestas</dd><dt>Tiempo</dt><dd>${EXAM.minutes} minutos</dd><dt>Para aprobar</dt><dd>${EXAM.pass} aciertos (60 %)</dd><dt>Corrección</dt><dd>${P.instant ? 'Al momento: ves si aciertas en cada pregunta' : 'Al entregar, como en el examen real'}</dd></dl></div>
 <div class="row" style="margin-top:14px"><span class="grow">Corrección</span><div class="seg" role="group" aria-label="Corrección">${[[1, 'Al momento'], [0, 'Al entregar']].map(([k, n]) => `<button class="${!!P.instant === !!k ? 'on' : ''}" data-act="simMode" data-k="${k}" aria-pressed="${!!P.instant === !!k}">${n}</button>`).join('')}</div></div>
 <button class="btn mag wide" style="margin-top:16px" data-act="simStart">Zarpar</button>`;
@@ -90,12 +91,12 @@ function simQuestion() {
   const good = shown && it.pick === it.ans;
   return `
 <div class="prog"><span>${S.i + 1}/${n}</span><div class="bar"><i style="width:${pct(answered, n)}%"></i></div><span>${answered} resp.</span></div>
-<p class="q" style="margin-top:14px">${esc(it.q.q)}</p>
+${avisoHtml(it.q)}<p class="q" style="margin-top:14px">${esc(it.q.q)}</p>
 ${it.order.map((_, j) => optBtn(it, j, 'simPick', shown)).join('')}
 ${shown ? `<div class="fb ${good ? '' : 'bad'}" id="fb" aria-live="polite"><span class="h">${good ? 'Correcto' : `Incorrecto · la buena es la ${'ABCD'[it.ans]}`}</span>${it.q.e || ''}</div>` : ''}
 <div class="btnrow"><button class="btn ghost" data-act="simPrev" ${S.i === 0 ? 'disabled' : ''}>Anterior</button><button class="btn" data-act="simNext" ${S.i === n - 1 ? 'disabled' : ''}>Siguiente</button></div>
 <div class="label">Hoja de respuestas</div>
-<div class="qgrid">${S.items.map((x, k) => `<button class="${x.pick == null ? '' : !S.inst ? 'ans' : x.pick === x.ans ? 'ok' : 'bad'} ${k === S.i ? 'cur' : ''}" data-act="simJump" data-k="${k}" aria-label="Pregunta ${k + 1}${x.pick != null ? ', respondida' : ''}">${k + 1}</button>`).join('')}</div>
+<div class="qgrid">${S.items.map((x, k) => `<button class="${x.pick == null ? '' : !S.inst ? 'ans' : x.pick === x.ans ? 'ok' : 'bad'} ${k === S.i ? 'cur' : ''}${avCls(x.q)}" data-act="simJump" data-k="${k}" aria-label="Pregunta ${k + 1}${x.pick != null ? ', respondida' : ''}">${k + 1}</button>`).join('')}</div>
 <button class="btn mag wide" data-act="simAsk">Entregar examen</button>
 <p class="small muted" style="text-align:center">${S.inst ? `Llevas ${S.items.filter(x => x.pick != null && x.pick === x.ans).length} de ${answered} acertadas. Con corrección al momento la respuesta no se puede cambiar.` : 'Toca otra vez una respuesta marcada para dejarla en blanco.'}</p>`;
 }
@@ -158,9 +159,9 @@ function simResult(p) {
 <div class="big">${r.ok}<small>/${r.n}</small></div><span class="verdict ${pass ? 'ok' : 'bad'}">${pass ? 'APTO' : 'NO APTO'}</span>
 <p class="muted">${r.auto ? 'Se acabó el tiempo. ' : ''}Tiempo: ${Math.floor(r.secs / 60)} min ${r.secs % 60} s. ${pass ? `Margen de ${plural(r.ok - EXAM.pass, 'acierto', 'aciertos')} sobre el aprobado.` : `Te faltaron ${plural(EXAM.pass - r.ok, 'acierto', 'aciertos')}.`}</p></div>
 <div class="label">Corrección · toca una casilla</div>
-<div class="qgrid">${S.items.map((x, k) => `<button class="${x.pick == null ? 'blank' : x.pick === x.ans ? 'ok' : 'bad'} ${k === S.ri ? 'cur' : ''}" data-act="simSee" data-k="${k}" aria-label="Pregunta ${k + 1}">${k + 1}</button>`).join('')}</div>
+<div class="qgrid">${S.items.map((x, k) => `<button class="${x.pick == null ? 'blank' : x.pick === x.ans ? 'ok' : 'bad'} ${k === S.ri ? 'cur' : ''}${avCls(x.q)}" data-act="simSee" data-k="${k}" aria-label="Pregunta ${k + 1}">${k + 1}</button>`).join('')}</div>
 <div class="panel"><div class="qmeta" style="margin-top:0"><span class="tag off">Pregunta ${S.ri + 1}</span>${qTag(it.q)}<span class="tag off">Tema ${it.q.t}</span>${it.pick == null ? '<span class="tag warn">En blanco</span>' : ''}</div>
-<p class="q">${esc(it.q.q)}</p>${it.order.map((_, j) => optBtn(it, j, 'noop', true)).join('')}
+${avisoHtml(it.q)}<p class="q">${esc(it.q.q)}</p>${it.order.map((_, j) => optBtn(it, j, 'noop', true)).join('')}
 <div class="small muted">${it.q.e || ''}</div></div>
 <div class="label">Por temas</div>
 <div class="panel"><ul class="list">${topics.map(t => `<li><span class="fl">${topicFlag(t)}</span><span class="grow small">${t}. ${esc(TOPIC[t].title)}</span><span class="mono">${r.byT[t][0]}/${r.byT[t][1]}</span></li>`).join('')}</ul></div>

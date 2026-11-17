@@ -13,6 +13,8 @@ for (let i = 1; i <= 19; i++) {
 }
 const exams = JSON.parse(fs.readFileSync(path.join(base, 'exams_unique.json'), 'utf8'));
 const raw = JSON.parse(fs.readFileSync(path.join(base, 'exams_raw.json'), 'utf8'));
+// older official exams (2017-2024), transcribed and reviewed against current law; av = warning if the law changed
+const old = JSON.parse(fs.readFileSync(path.join(base, 'exams_old.json'), 'utf8'));
 // position -> topic map (exam order follows the syllabus)
 const POS2T = {};
 const layout = [[1,1],[2,1],[3,2],[4,2],[5,3],[6,4],[7,5],[8,6],[9,7],[10,7],[11,8],[12,8],[13,9],[14,10],[15,10],[16,11],[17,12],[18,12],[19,13],[20,14],[21,14],[22,15],[23,15],[24,16],[25,17],[26,17],[27,18],[28,18],[29,19],[30,19]];
@@ -52,8 +54,20 @@ for (const conv of ['2026abr', '2025nov', '2025abr']) {
   const ids = raw[`${conv}_t1`].map(q => stemToId[norm(q.q)] || (norm(q.q).includes('con relación a la administración periférica') ? '2025abr-1-06' : null));
   const missing = ids.filter(x => !x).length;
   if (missing) problems.push(`replica ${conv}: ${missing} unmapped`);
-  replicas.push({ conv, name: CONV[conv], ids });
+  replicas.push({ conv, name: CONV[conv], test: 1, ids });
 }
+// older official exams
+const OLD_CONVS = [];
+for (const q of old) {
+  if (!OLD_CONVS.find(c => c.conv === q.conv)) OLD_CONVS.push({ conv: q.conv, name: q.convName, test: +q.id.split('-')[1], ids: [] });
+  OLD_CONVS.find(c => c.conv === q.conv).ids.push(q.id);
+  const o = { id: q.id, t: q.t, src: 'oficial', conv: q.conv, convName: q.convName, q: clean(q.q), o: q.o.map(clean), a: q.a, e: q.e };
+  if (q.av) o.av = q.av;
+  if (!(o.a >= 0 && o.a <= 3) || o.o.length !== 4 || o.o.some(x => !x)) problems.push(`old ${q.id}: bad question`);
+  if (!(o.t >= 1 && o.t <= 19)) problems.push(`old ${q.id}: bad topic`);
+  official.push(o);
+}
+OLD_CONVS.forEach(c => replicas.push(c));
 // practice questions
 const practice = [];
 let pid = 0;
@@ -86,7 +100,7 @@ const stat = topics.map(t => {
 console.log(stat.join('\n'));
 const totals = { cards: 0, tf: 0, pairs: 0, cloze: 0, quiz: 0 };
 topics.forEach(t => { totals.cards += t.cards.length; totals.tf += t.tf.length; totals.pairs += t.pairs.length; totals.cloze += t.cloze.length; totals.quiz += t.quiz.length; });
-console.log('TOTALS', JSON.stringify(totals), 'official', official.length);
+console.log('TOTALS', JSON.stringify(totals), 'official', official.length, 'old', old.length, 'warned', old.filter(q => q.av).length);
 // options referencing other options
 for (const q of [...official, ...practice]) {
   if (q.o.some(o => /anteriores|todas las|ninguna de las/i.test(o))) problems.push(`option refers to others: ${q.id}`);
@@ -94,7 +108,7 @@ for (const q of [...official, ...practice]) {
 console.log(problems.length ? 'PROBLEMS:\n' + problems.join('\n') : 'No problems');
 const WEIGHT = { 1: 2, 2: 2, 3: 1, 4: 1, 5: 1, 6: 1, 7: 2, 8: 2, 9: 1, 10: 2, 11: 1, 12: 2, 13: 1, 14: 2, 15: 2, 16: 1, 17: 2, 18: 2, 19: 2 };
 const data = {
-  version: '2026.10.07',
+  version: '2026.11.17',
   exam: { date: '2026-11-21', enrolFrom: '2026-10-15', enrolTo: '2026-10-31', place: 'Facultad de Derecho de la Universidad Autónoma de Madrid', questions: 30, options: 4, minutes: 60, pass: 18 },
   topics: topics.map(t => ({ id: t.id, title: t.title, law: t.law, scope: t.scope, intro: t.intro, update: t.update || null, weight: WEIGHT[t.id], cards: t.cards, tf: t.tf, pairs: t.pairs, cloze: t.cloze })),
   questions: [...official, ...practice],

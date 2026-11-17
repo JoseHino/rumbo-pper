@@ -221,3 +221,19 @@ main{flex:1;padding:0 16px 28px}
 .pop{animation:pop .45s ease both}
 @media (min-width:600px){.hero{margin:0;border-radius:0 0 20px 20px;border:1px solid var(--rule);border-top:0}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+/* Aviso de pregunta antigua con normativa cambiada */
+.aviso{display:flex;gap:10px;align-items:flex-start;margin:12px 0 4px;padding:10px 12px;border-radius:12px;border:1.5px solid var(--bad);background:var(--bad-soft);font-size:14px;line-height:1.45;color:var(--ink)}
+.aviso .ic{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:var(--bad);color:#fff;font-weight:800;font-size:13px;font-family:var(--f-mono)}
+.aviso b{color:var(--bad)}
+.aviso.ojo{border-color:var(--gold);background:var(--land)}
+.aviso.ojo .ic{background:var(--gold)}
+.aviso.ojo b{color:var(--ink)}
+.aviso.fuera{border-color:var(--rule);background:var(--surface-2)}
+.aviso.fuera .ic{background:var(--ink-3)}
+.aviso.fuera b{color:var(--ink-2)}
+.qgrid button{position:relative}
+.qgrid button.av-derogada::after,.qgrid button.av-ojo::after{content:'';position:absolute;top:2px;right:2px;width:6px;height:6px;border-radius:50%;background:var(--bad);box-shadow:0 0 0 1.5px var(--surface)}
+.qgrid button.av-ojo::after{background:var(--gold)}
+.avc{color:var(--bad);font-weight:700}
+.avk.derogada{color:var(--bad)}.avk.ojo{color:var(--gold)}.avk.fuera{color:var(--ink-3)}

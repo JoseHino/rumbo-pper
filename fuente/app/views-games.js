@@ -207,7 +207,7 @@ function learnQuiz() {
   return `
 <div class="prog"><span>${S.i + 1}/${S.items.length}</span><div class="bar"><i style="width:${pct(S.i + (done ? 1 : 0), S.items.length)}%"></i></div><span>${S.ok} ✓</span></div>
 <div class="qmeta">${qTag(it.q)}<span class="tag off">Tema ${it.q.t}</span></div>
-<p class="q">${esc(it.q.q)}</p>
+${avisoHtml(it.q)}<p class="q">${esc(it.q.q)}</p>
 ${it.order.map((_, j) => optBtn(it, j, 'qAns', done)).join('')}
 ${done ? `<div class="fb ${ok ? '' : 'bad'}" id="fb" aria-live="polite"><span class="h">${ok ? 'Correcto' : `Incorrecto · la buena es la ${'ABCD'[it.ans]}`}</span>${it.q.e || ''}</div>
 <button class="btn wide" style="margin-top:12px" data-act="qNext">${S.i >= S.items.length - 1 ? 'Ver resultado' : 'Siguiente'}</button>` : ''}`;
@@ -242,7 +242,7 @@ ACT.qNext = () => {
 function quizReview(items) {
   const bad = items.filter(it => it.pick !== it.ans);
   if (!bad.length) return '';
-  return `<div class="label">Repasa tus fallos</div>` + bad.map(it => `<div class="panel"><div class="qmeta" style="margin-top:0">${qTag(it.q)}</div><p class="q" style="font-size:15.5px">${esc(it.q.q)}</p>
+  return `<div class="label">Repasa tus fallos</div>` + bad.map(it => `<div class="panel"><div class="qmeta" style="margin-top:0">${qTag(it.q)}</div>${avisoHtml(it.q)}<p class="q" style="font-size:15.5px">${esc(it.q.q)}</p>
 <p class="small" style="margin:0 0 6px">${it.pick != null ? `<span style="color:var(--bad)">Tu respuesta: ${esc(it.q.o[it.order[it.pick]])}</span><br>` : '<span class="muted">Sin responder</span><br>'}<span style="color:var(--ok)"><b>Correcta: ${esc(it.q.o[it.q.a])}</b></span></p>
 <div class="small muted">${it.q.e || ''}</div></div>`).join('');
 }
