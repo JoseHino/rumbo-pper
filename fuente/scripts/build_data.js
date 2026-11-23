@@ -132,8 +132,9 @@ for (const q of [...official, ...practice]) {
 console.log(problems.length ? 'PROBLEMS:\n' + problems.join('\n') : 'No problems');
 const WEIGHT = { 1: 2, 2: 2, 3: 1, 4: 1, 5: 1, 6: 1, 7: 2, 8: 2, 9: 1, 10: 2, 11: 1, 12: 2, 13: 1, 14: 2, 15: 2, 16: 1, 17: 2, 18: 2, 19: 2 };
 const data = {
-  version: '2026.11.23',
-  exam: { date: '2026-11-21', enrolFrom: '2026-10-15', enrolTo: '2026-10-31', place: 'Facultad de Derecho de la Universidad Autónoma de Madrid', questions: 30, options: 4, minutes: 60, pass: 18 },
+  version: '2026.11.24',
+  // next sitting: not published yet -> approximate (2026 pattern: BOE in late January, enrolment 1-15 March, exam on the 3rd Saturday of April in Madrid)
+  exam: { name: 'Primera convocatoria de 2027', approx: true, date: '2027-04-17', enrolFrom: '2027-03-01', enrolTo: '2027-03-15', place: 'Madrid (lugar por confirmar)', prev: 'En 2026 fue el sábado 18 de abril, con matrícula del 1 al 15 de marzo; la segunda, el 21 de noviembre.', questions: 30, options: 4, minutes: 60, pass: 18 },
   topics: topics.map(t => ({ id: t.id, title: t.title, law: t.law, scope: t.scope, intro: t.intro, update: t.update || null, weight: WEIGHT[t.id], cards: t.cards, tf: t.tf, pairs: t.pairs, cloze: t.cloze })),
   questions: [...official, ...practice],
   replicas,

@@ -230,7 +230,7 @@ function render(scrollTop) {
   const due = dueIds().length;
   const on = tabOf(c.v, c.p);
   document.getElementById('tabs').innerHTML = TABS.map(([v, label, ic]) =>
-    `<button data-act="tab" data-v="${v}" class="${on === v ? 'on' : ''}" ${on === v ? 'aria-current="page"' : ''}>${ICONS[ic]}<span>${label}</span>${v === 'review' && due ? `<span class="badge">${due > 99 ? '99+' : due}</span>` : ''}</button>`).join('');
+    `<button data-act="tab" data-v="${v}" class="${on === v ? 'on' : ''}" ${on === v ? 'aria-current="page"' : ''}>${ICONS[ic]}<span>${label}</span></button>`).join('');
   if (V.after) V.after(c.p);
   if (scrollTop) window.scrollTo(0, 0);
 }

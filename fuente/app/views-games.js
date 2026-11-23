@@ -287,7 +287,7 @@ function examEnd(t) {
 <p class="muted">${pass ? 'Más del 60 %, como en el examen real.' : 'Necesitas un 60 % (18 de 30 en el examen real). Repasa los fallos y vuelve a intentarlo.'}</p></div>
 ${quizReview(S.items)}
 <div class="stack" style="margin-top:16px">${pass && nextT ? `<button class="btn wide" data-act="topicJump" data-t="${nextT}">Siguiente tema: ${esc(TOPIC[nextT].title)}</button>` : ''}
-${pass && !nextT ? '<button class="btn wide" data-act="go" data-v="sim">Haz un simulacro completo</button>' : ''}
+${pass && !nextT ? '<button class="btn wide" data-act="tab" data-v="simMenu">Haz un examen oficial completo</button>' : ''}
 <button class="btn ${pass ? 'ghost' : ''} wide" data-act="retry">Repetir examen</button>
 <button class="btn ghost wide" data-act="back">Volver al tema</button></div>`;
 }

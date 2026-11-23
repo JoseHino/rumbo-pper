@@ -30,17 +30,18 @@ VIEWS.home = {
     const r = rankOf(P.xp);
     const passed = TOPICS.filter(t => topicPassed(t.id)).length;
     const nt = nextTopic();
-    const due = dueIds().length;
     const st = streak();
     const from = keyToNum(EXAM.enrolFrom), to = keyToNum(EXAM.enrolTo), d0 = today();
     const longDate = fmtDate(EXAM.date, { weekday: 'long', day: 'numeric', month: 'long' });
     let count;
-    if (dte > 1) count = `<span class="n">${dte}</span><span class="t">días para el examen<br><b>${longDate}</b> · Madrid</span>`;
+    if (EXAM.approx && dte > 1) count = `<span class="n">≈${dte}</span><span class="t">días para el próximo examen<br><b>${fmtDate(EXAM.date, { month: 'long', year: 'numeric' })}</b> · fecha aproximada</span>`;
+    else if (dte > 1) count = `<span class="n">${dte}</span><span class="t">días para el examen<br><b>${longDate}</b> · Madrid</span>`;
     else if (dte === 1) count = `<span class="n">1</span><span class="t">día: el examen es <b>mañana</b><br>${longDate} · Madrid</span>`;
     else if (dte === 0) count = `<span class="n">0</span><span class="t"><b>Hoy es el examen.</b><br>Buen viento y mar llana.</span>`;
     else count = `<span class="t"><b>La convocatoria del ${longDate} ya pasó.</b><br>Sigue entrenando para la próxima.</span>`;
     let enrol = '';
-    if (d0 < from) enrol = `<span class="tag warn">Matrícula del ${fmtDate(EXAM.enrolFrom, { day: 'numeric', month: 'long' })} al ${fmtDate(EXAM.enrolTo, { day: 'numeric', month: 'long' })}</span>`;
+    if (EXAM.approx) enrol = `<span class="tag warn">Sin fecha oficial todavía</span> <button class="link small" data-act="tab" data-v="info">Dónde consultarla ›</button>`;
+    else if (d0 < from) enrol = `<span class="tag warn">Matrícula del ${fmtDate(EXAM.enrolFrom, { day: 'numeric', month: 'long' })} al ${fmtDate(EXAM.enrolTo, { day: 'numeric', month: 'long' })}</span>`;
     else if (d0 <= to) enrol = `<span class="tag">Matrícula abierta hasta el ${fmtDate(EXAM.enrolTo, { day: 'numeric', month: 'long' })}</span>`;
     const w = (a, b) => Math.min(100, pct(a, b));
     const ns = nt ? nextStage(nt) : null;
@@ -60,8 +61,8 @@ VIEWS.home = {
 ${introPanel()}
 <div class="quick">
   <button data-act="continue"><b>Continuar</b><span>${cont}</span></button>
-  <button data-act="tab" data-v="review"><b>Repaso</b><span>${due ? plural(due, 'pregunta pendiente', 'preguntas pendientes') : 'Nada pendiente hoy'}</span></button>
-  <button data-act="go" data-v="sim"><b>Simulacro</b><span>${EXAM.questions} preguntas · ${EXAM.minutes} min</span></button>
+  <button data-act="tab" data-v="review"><b>Test por temas</b><span>Solo preguntas oficiales</span></button>
+  <button data-act="tab" data-v="claves"><b>Claves</b><span>Lo que siempre cae</span></button>
   <button data-act="tab" data-v="simMenu"><b>Exámenes reales</b><span>${DATA.replicas.length} convocatorias completas</span></button>
 </div>
 <div class="label">La ruta · ${passed}/19 temas aprobados</div>
@@ -72,11 +73,11 @@ ${TOPICS.map(t => {
   return `<button class="wp ${t.id === nt ? 'next' : ''}" data-act="go" data-v="topic" data-t="${t.id}">
     <span class="fl">${topicFlag(t.id)}</span>
     <span><span class="k">WP ${pad(t.id)} · ${FLAG_INFO[L][0]}</span><span class="ti">${esc(t.title)}</span>
-    <span class="me">${starsHtml(x.stars || 0)}<span class="dots" aria-label="${stagesDone(t.id)} de 5 etapas">${STAGES.map(s => `<i class="${stageDone(t.id, s.k) ? 'on' : ''}"></i>`).join('')}</span>${t.id === nt ? '<span class="tag">Siguiente rumbo</span>' : ''}${t.update ? '<span class="tag warn">Aviso</span>' : ''}</span></span>
+    <span class="me">${starsHtml(x.stars || 0)}<span class="dots" aria-label="${stagesDone(t.id)} de 5 etapas">${STAGES.map(s => `<i class="${stageDone(t.id, s.k) ? 'on' : ''}"></i>`).join('')}</span>${t.id === nt ? '<span class="tag">Siguiente rumbo</span>' : ''}</span></span>
     <span class="chev" aria-hidden="true">›</span></button>`;
 }).join('')}
 </nav>
-<p class="foot">Contenidos según el temario del BOE de 20-7-2026 y la normativa vigente a 7 de octubre de 2026.<br>Preguntas oficiales: exámenes de la DGMM de abril 2025, noviembre 2025 y abril 2026.</p>`;
+<p class="foot">Contenidos según el temario del BOE de 20-7-2026 y la normativa vigente.<br>Preguntas oficiales: ${DATA.replicas.length} exámenes de la DGMM, de octubre de 2017 a noviembre de 2026.</p>`;
   },
 };
 ACT.continue = () => {
@@ -89,15 +90,17 @@ ACT.continue = () => {
     render(true);
   });
 };
-ACT.introOk = () => { P.intro = 1; save(); rerender(); };
+ACT.introOk = () => { P.intro = 2; save(); rerender(); };
 function introPanel() {
-  if (P.intro) return '';
+  if ((P.intro || 0) >= 2) return '';
   return `<div class="panel" style="margin-top:16px"><b style="font-size:17px">Cómo se navega esta app</b>
 <ul class="prose small" style="margin:8px 0 0;padding-left:18px">
-<li>Cada uno de los <b>19 temas</b> del examen es un punto de la ruta, con su bandera del Código de Señales.</li>
-<li>Cada tema tiene <b>5 etapas</b>: fichas de lección, verdadero o falso contra el reloj, parejas, cifras clave y un examen con las preguntas oficiales. El tema queda aprobado con un 60 % en ese examen.</li>
-<li>Todo lo que aciertas suma <b>millas</b>. Un día con 50 millas o más cuenta como <b>día de mar</b>, y cada simulacro aprobado es una <b>travesía</b>: 2.500 millas, 50 días y 5 travesías, como el registro que pide el certificado.</li>
-<li><b>Repaso</b> te vuelve a preguntar lo que fallas, a intervalos crecientes. La etiqueta <b>Aviso</b> marca los temas en los que tus apuntes no coinciden con el temario vigente.</li>
+<li><b>Ruta:</b> los <b>19 temas</b> del examen, cada uno con su bandera del Código de Señales. Cada tema tiene <b>5 etapas</b>: fichas, verdadero o falso contra el reloj, parejas, cifras clave y un examen. Se aprueba con un 60 %.</li>
+<li><b>Claves:</b> qué cae en cada número de pregunta del examen, los datos que más se repiten y las preguntas que ya han salido varias veces. Empieza por aquí si vas con poco tiempo.</li>
+<li><b>Repaso:</b> un test por tema, solo con preguntas oficiales vigentes.</li>
+<li><b>Simulacro:</b> los exámenes oficiales completos, de 2017 a noviembre de 2026, con su tiempo y su corrección.</li>
+<li><b>Bitácora:</b> tu progreso. Lo que aciertas suma <b>millas</b>; un día con 50 o más es un <b>día de mar</b> y cada examen aprobado, una <b>travesía</b>.</li>
+<li><b>Examen:</b> fecha de la próxima convocatoria, cómo es la prueba y dónde consultar las novedades.</li>
 </ul>
 <button class="btn wide" style="margin-top:12px" data-act="introOk">Entendido, a navegar</button></div>`;
 }

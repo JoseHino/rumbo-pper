@@ -54,17 +54,29 @@ ACT.reset = () => confirmBox({ title: 'Borrar progreso', text: 'Se borrarán tus
 VIEWS.info = {
   title: 'El examen',
   render() {
-    const upd = TOPICS.filter(t => t.update);
     const d = k => fmtDate(k, { day: 'numeric', month: 'long' });
+    const MIN = 'https://www.transportes.gob.es/marina-mercante/titulaciones/titulos-profesionales-formacion-maritima-documentos-y-guardia-de-la-gente-de-mar/titulaciones-profesionales/examenes-y-pruebas-nacionales';
     return `
-<div class="label">Segunda convocatoria de 2026</div>
-<div class="panel"><dl class="dl">
+<div class="label">Próximo examen</div>
+${EXAM.approx ? `<div class="panel"><div class="qmeta" style="margin-top:0"><span class="tag warn">Fecha aproximada</span></div><dl class="dl" style="margin-top:10px">
+  <dt>Convocatoria</dt><dd>${esc(EXAM.name)}</dd>
+  <dt>Fecha</dt><dd>Hacia el ${fmtDate(EXAM.date, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}. Aún no está publicada</dd>
+  <dt>Matrícula</dt><dd>Previsiblemente del ${d(EXAM.enrolFrom)} al ${d(EXAM.enrolTo)}, por «matriculación exprés» en la sede electrónica o en registro</dd>
+  <dt>Lugar</dt><dd>${esc(EXAM.place)}</dd>
+  <dt>Requisito</dt><dd>Título de Capitán de Yate</dd>
+</dl>
+<p class="small muted" style="margin:12px 0 0">${esc(EXAM.prev)} Las fechas de 2027 saldrán en una resolución de la Dirección General de la Marina Mercante que se publica en el BOE, normalmente a finales de enero.</p></div>` : `<div class="panel"><dl class="dl">
   <dt>Fecha</dt><dd>${fmtDate(EXAM.date, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</dd>
-  <dt>Lugar</dt><dd>${esc(EXAM.place)}, calle Kelsen 1, Madrid</dd>
-  <dt>Hora</dt><dd>La fija el tribunal según el número de candidatos y se publica en la web del Ministerio</dd>
+  <dt>Lugar</dt><dd>${esc(EXAM.place)}</dd>
   <dt>Matrícula</dt><dd>Del ${d(EXAM.enrolFrom)} al ${d(EXAM.enrolTo)}, por «matriculación exprés» en la sede electrónica o en registro</dd>
   <dt>Requisito</dt><dd>Título de Capitán de Yate</dd>
-</dl></div>
+</dl></div>`}
+<div class="label">Dónde consultarlo cuando salga</div>
+<div class="panel prose small"><ul>
+<li>${ext(MIN, 'Ministerio de Transportes: exámenes y pruebas nacionales')}: fechas, listas de admitidos, hora y lugar, exámenes y plantillas.</li>
+<li>${ext('https://www.boe.es/', 'Boletín Oficial del Estado')}: busca «patrón profesional de embarcaciones de recreo». Ahí sale la resolución con el temario, la fecha y el plazo de matrícula.</li>
+<li>${ext('https://sede.transportes.gob.es/', 'Sede electrónica del Ministerio')}: para matricularte cuando se abra el plazo.</li>
+</ul></div>
 <div class="label">Cómo es la prueba</div>
 <div class="panel"><dl class="dl">
   <dt>Preguntas</dt><dd>${EXAM.questions}, con cuatro respuestas y una sola correcta</dd>
@@ -76,14 +88,9 @@ VIEWS.info = {
 <div class="panel prose"><p>Gobierno de embarcaciones de recreo españolas de las listas 6.ª y 7.ª, de hasta 24 m de eslora y con un máximo de 12 pasajeros además de la tripulación (art. 93.2 del RD 269/2022):</p>
 <ul><li><b>Primera categoría:</b> navegación a lo largo de la costa hasta 60 millas de ella.</li><li><b>Segunda categoría:</b> cabotaje y costa hasta 150 millas; exige además 24 meses de embarco como PPER.</li><li><b>Formación:</b> instructor en las prácticas básicas de seguridad y navegación de PNB y PER.</li></ul>
 <p>Para la primera categoría (art. 93.3) necesitas 20 años, Capitán de Yate, un registro de 50 días y 2.500 millas con al menos cinco travesías de más de 60 millas como patrón, operador general o restringido del SMSSM, formación básica en seguridad, formación sanitaria específica inicial, certificado médico y aprobar esta prueba. El certificado vale 5 años.</p></div>
-${upd.length ? `<div class="label">Tus apuntes frente al BOE</div>
-<div class="panel prose"><p>En ${upd.length} temas tus apuntes no coinciden con lo que pide el temario de 2026: normas derogadas o modificadas, o partes que no recogen. La app usa el texto vigente del BOE:</p><ul>${upd.map(t => `<li><b>Tema ${t.id}.</b> ${t.update}</li>`).join('')}</ul></div>` : ''}
 <div class="label">Fuentes</div>
 <div class="panel prose small"><ul>
-<li>${ext('https://www.boe.es/boe/dias/2026/07/20/pdfs/BOE-A-2026-15822.pdf', 'Resolución de 11 de junio de 2026: temario y fecha (BOE 20-7-2026)')}</li>
-<li>${ext('https://www.boe.es/boe/dias/2026/01/28/pdfs/BOE-A-2026-2053.pdf', 'Resolución de 9 de enero de 2026: estructura de la prueba (BOE 28-1-2026)')}</li>
-<li>${ext(boeUrl('BOE-A-2022-6047'), 'Real Decreto 269/2022, art. 93')}</li>
-<li>${ext('https://www.transportes.gob.es/marina-mercante/titulaciones/titulos-profesionales-formacion-maritima-documentos-y-guardia-de-la-gente-de-mar/titulaciones-profesionales/examenes-y-pruebas-nacionales', 'Exámenes y plantillas publicados por el Ministerio')}</li>
+<li>${ext(MIN, 'Exámenes y plantillas publicados por el Ministerio')}</li>
 <li>Normativa de cada tema: enlaces al BOE en la ficha del tema.</li></ul></div>
 <p class="foot">App de estudio no oficial. Ante cualquier duda manda el BOE.</p>`;
   },

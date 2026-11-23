@@ -57,7 +57,7 @@ async function run() {
     tab('home');
   });
   await step('random sim', () => {
-    tab('simMenu'); click('.panel [data-v="sim"]');
+    tab('simMenu'); go('sim');
     expect(S.items.length === 30, 'sim len ' + S.items.length);
     const per = {}; S.items.forEach(it => { per[it.q.t] = (per[it.q.t] || 0) + 1; });
     TOPICS.forEach(t => expect(per[t.id] === t.weight, 'weight t' + t.id));
@@ -69,7 +69,7 @@ async function run() {
     ACT.simSee({ k: '27' }); expect(S.ri === 27, 'see');
   });
   await step('instant correction', () => {
-    tab('simMenu'); click('.panel [data-v="sim"]');
+    tab('simMenu'); go('sim');
     click('[data-act="simMode"][data-k="0"]'); expect(P.instant === false, 'mode off');
     click('[data-act="simMode"][data-k="1"]'); expect(P.instant === true, 'mode on');
     ACT.simStart(); const it = S.items[0];
@@ -87,23 +87,38 @@ async function run() {
     expect(S.res.ok === 0, 'blank exam');
   });
   await step('leave guard', () => {
-    tab('simMenu'); click('.panel [data-v="sim"]'); ACT.simStart();
+    tab('simMenu'); go('sim'); ACT.simStart();
     tab('home'); expect(document.querySelector('.modal'), 'no modal'); expect(cur().v === 'sim', 'left without confirm');
     document.querySelector('.modal [data-m="1"]').click(); expect(cur().v === 'home', 'did not leave');
   });
-  await step('review due', () => {
-    tab('review'); const due = dueIds().length; expect(due > 0, 'nothing due');
-    click('[data-v="reviewRun"][data-k="due"]');
-    for (let k = 0; k < 25 && !S.end; k++) { ACT.qAns({ j: String(S.items[S.i].ans) }); ACT.qNext(); }
-    expect(S.end, 'review end');
+  await step('simulacro tab without top button and footer', () => {
+    tab('simMenu'); const v = document.getElementById('view');
+    expect(!v.querySelector('[data-v="sim"]:not([data-c])') && !v.textContent.includes('Faltan octubre de 2022'), 'old ui still there');
+    expect(v.querySelector('[data-c]') === v.querySelector('[data-c="2026nov"]'), 'nov 2026 first');
   });
-  await step('bank', () => { tab('review'); click('[data-k="bank"]'); expect(S.items.length === 20 && S.items.every(it => it.q.src === 'oficial'), 'bank'); });
+  await step('repaso: test por tema, solo oficiales vigentes', () => {
+    tab('review'); expect(document.querySelectorAll('#view [data-k="vig"]').length === 19, '19 topics');
+    expect(!document.querySelector('#view [data-k="bank"]') && !document.querySelector('#view .boxes'), 'old repaso ui');
+    click('[data-k="vig"][data-t="17"]');
+    expect(S.items.length > 0 && S.items.length <= 20 && S.items.every(it => it.q.src === 'oficial' && it.q.t === 17 && !(it.q.av && ['derogada', 'fuera'].includes(it.q.av.n))), 'not vigentes');
+    for (let k = 0; k < 25 && !S.end; k++) { ACT.qAns({ j: String(S.items[S.i].ans) }); ACT.qNext(); }
+    expect(S.end && P.rt && P.rt[17] === 100, 'best not saved');
+    tab('review'); expect(document.querySelector('[data-k="vig"][data-t="17"]').classList.contains('done'), 'not marked');
+  });
+  await step('claves: estructura', () => {
+    tab('claves'); expect(document.querySelectorAll('.crow').length === 19 && document.querySelectorAll('.ctop li').length === 8 && document.querySelectorAll('.csec').length === 4, 'main');
+    click('.crow[data-t="9"]'); expect(cur().v === 'clave' && cur().p.t === 9, 'detail');
+    expect(document.querySelector('.cchipset span') && document.querySelector('.ckeys li'), 'detail blocks');
+    click('[data-act="cgo"][data-t="10"]'); expect(cur().p.t === 10 && NAV.stack.length === 2, 'next');
+    click('[data-act="go"][data-k="vig"]'); expect(cur().v === 'reviewRun' && S.items.every(it => it.q.t === 10), 'test from clave');
+    tab('claves');
+  });
   await step('log + theme', () => {
     tab('log'); ACT.theme({ k: 'dark' }); expect(document.documentElement.getAttribute('data-theme') === 'dark', 'dark');
     ACT.theme({ k: 'auto' }); expect(!document.documentElement.hasAttribute('data-theme'), 'auto');
     expect(document.querySelectorAll('.badges .on').length === Object.keys(P.badges).length, 'badges');
   });
-  await step('info', () => { tab('info'); expect(document.getElementById('view').textContent.includes('Kelsen'), 'info'); });
+  await step('info', () => { tab('info'); const v = document.getElementById('view').textContent; expect(v.includes('Próximo examen') && v.includes('2027') && !v.includes('Tus apuntes'), 'info'); });
   await step('persisted', () => { const s = JSON.parse(localStorage.getItem('rumbo-pper-v1')); expect(s && s.xp === P.xp && s.xp > 0, 'local'); });
   await step('continue goes to pending stage', () => {
     tab('home'); click('[data-act="continue"]');
@@ -113,7 +128,7 @@ async function run() {
   });
   await step('intro panel', () => {
     tab('home'); expect(document.querySelector('[data-act="introOk"]'), 'no intro');
-    click('[data-act="introOk"]'); expect(!document.querySelector('[data-act="introOk"]') && P.intro === 1, 'intro not dismissed');
+    click('[data-act="introOk"]'); expect(!document.querySelector('[data-act="introOk"]') && P.intro === 2, 'intro not dismissed');
   });
   __log.push('xp=' + P.xp + ' days=' + JSON.stringify(P.days) + ' badges=' + Object.keys(P.badges).join(',') + ' L=' + Object.keys(P.L).length);
   await step('reset', () => { tab('log'); ACT.reset(); document.querySelector('.modal [data-m="1"]').click(); expect(P.xp === 0, 'reset'); });

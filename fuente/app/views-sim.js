@@ -28,15 +28,11 @@ VIEWS.simMenu = {
   render() {
     const hist = P.sims.slice(-10).reverse();
     return `
-<div class="panel" style="margin-top:16px"><div class="row"><div class="flag" style="width:54px;height:36px">${flagSvg('P')}</div><div class="grow"><b>Simulacro de examen</b><div class="small muted">${EXAM.questions} preguntas · ${EXAM.minutes} minutos · ${EXAM.pass} aciertos para aprobar. Oficiales y de práctica, repartidas por temas como en las convocatorias.</div></div></div>
-<button class="btn mag wide" style="margin-top:14px" data-act="go" data-v="sim">Zarpar</button></div>
-<div class="label">Exámenes oficiales</div>
+<div class="label" style="margin-top:16px">Exámenes oficiales</div>
 ${DATA.replicas.map(r => {
   const b = simBest(r.conv);
   return `<button class="stage ${b != null && b >= EXAM.pass ? 'done' : ''}" data-act="go" data-v="sim" data-c="${r.conv}"><span class="n" style="font-size:12px;font-style:normal;font-family:var(--f-mono)">${b != null && b >= EXAM.pass ? '✓' : r.name.slice(0, 3)}</span><span class="grow"><b>${esc(r.name)}</b><span class="s">Test 0${r.test || 1} · ${r.ids.length} preguntas${r.ids.length < 30 ? ' (sin las anuladas)' : ''}${(n => n ? ` · <span class="avc">${n} con aviso</span>` : '')(r.ids.filter(id => QBY[id] && QBY[id].av && QBY[id].av.n !== 'fuera').length)}${b != null ? ` · mejor ${b}/${r.ids.length}` : ''}</span></span><span class="muted" aria-hidden="true">›</span></button>`;
 }).join('')}
-<p class="small muted">Convocatorias de 2017 a 2026 publicadas por la Dirección General de la Marina Mercante, con su plantilla oficial de respuestas. Cada una publicó dos modelos con las mismas preguntas en distinto orden; aquí tienes uno tal cual se examinó (el 02 en diciembre de 2020, porque del 01 no se conserva la plantilla). Faltan octubre de 2022, abril y noviembre de 2023 y marzo de 2017, que ya no se encuentran o no tienen respuestas publicadas.</p>
-<p class="small muted">Las preguntas de normas que han cambiado desde entonces llevan un aviso: <b class="avk derogada">rojo</b> si la respuesta puede no valer hoy, <b class="avk ojo">ámbar</b> si la norma cambió pero la respuesta sigue valiendo y <b class="avk fuera">gris</b> si ya no está en el temario de 2026.</p>
 <div class="label">Historial</div>
 ${hist.length ? `<div class="panel"><ul class="list">${hist.map(s => `<li><span class="grow"><b>${s.m === 'sim' ? 'Simulacro' : 'Examen ' + esc(convName(s.m))}</b><br><span class="small muted">${fmtDate(s.d, { day: 'numeric', month: 'short' })} · ${Math.round(s.sec / 60)} min</span></span><span class="mono">${s.s}/${s.n}</span><span class="tag ${s.s >= EXAM.pass ? 'ok' : 'off'}">${s.s >= EXAM.pass ? 'Apto' : 'No apto'}</span></li>`).join('')}</ul></div>` : '<p class="muted small">Todavía no has hecho ningún simulacro.</p>'}`;
   },
@@ -170,31 +166,29 @@ ${avisoHtml(it.q)}<p class="q">${esc(it.q.q)}</p>${it.order.map((_, j) => optBtn
 ACT.simSee = d => { S.ri = +d.k; rerender(); };
 ACT.noop = () => {};
 
-/* --- Repaso espaciado (cajas de Leitner) --- */
+/* --- Repaso: test de cada tema con sus preguntas oficiales vigentes --- */
+const vigente = q => q.src === 'oficial' && !(q.av && (q.av.n === 'derogada' || q.av.n === 'fuera'));
+const vigentesDe = t => (BYT[t] || []).filter(vigente);
+const TANDA = 20;
 VIEWS.review = {
   title: 'Repaso',
   render() {
-    const boxes = [0, 0, 0, 0, 0];
-    Object.keys(P.L).forEach(id => { if (QBY[id]) boxes[P.L[id][0] - 1]++; });
-    const due = dueIds().length;
-    const total = boxes.reduce((a, b) => a + b, 0);
-    const off = QUESTIONS.filter(q => q.src === 'oficial');
-    const offSeen = off.filter(q => P.L[q.id]).length;
+    const rt = P.rt || {};
     return `
-<div class="panel" style="margin-top:16px">
-  <div class="row"><div class="grow"><b style="font-size:18px">${due ? plural(due, 'pregunta para hoy', 'preguntas para hoy') : 'Nada pendiente hoy'}</b><div class="small muted">${total ? `${plural(total, 'pregunta', 'preguntas')} en tus cajas` : 'Las preguntas que respondas irán entrando aquí.'}</div></div></div>
-  <div class="boxes">${boxes.map((b, i) => `<div><b>${b}</b><span>Caja ${i + 1}</span></div>`).join('')}</div>
-  <button class="btn mag wide" style="margin-top:14px" data-act="go" data-v="reviewRun" data-k="due" ${due ? '' : 'disabled'}>Empezar repaso${due ? ` (${Math.min(20, due)})` : ''}</button>
-  ${boxes[0] ? `<button class="btn ghost wide" style="margin-top:10px" data-act="go" data-v="reviewRun" data-k="fails">Solo los fallos (${boxes[0]})</button>` : ''}
-</div>
-<div class="label">Banco de preguntas oficiales</div>
-<div class="panel"><div class="row"><div class="flag" style="width:48px;height:32px">${flagSvg('B')}</div><div class="grow"><b>${off.length} preguntas de examen</b><div class="small muted">Has visto ${offSeen}. Tandas de 20, primero las que menos dominas.</div></div></div>
-<button class="btn wide" style="margin-top:12px" data-act="go" data-v="reviewRun" data-k="bank">Practicar oficiales</button></div>
-<div class="label">Cómo funciona</div>
-<div class="prose small muted"><p>Cada pregunta que respondes en los exámenes de tema, simulacros y repasos entra en una de cinco cajas. Si la fallas vuelve a la caja 1 y te la pregunto hoy mismo; si la aciertas sube de caja y tarda más en volver: 1, 3, 7 y 16 días. Así repasas justo lo que se te olvida.</p></div>`;
+<p class="small muted" style="margin:16px 0 6px">Elige un tema y haz un test solo con sus preguntas oficiales de examen. Se quitan las de normas derogadas o que ya no están en el temario. En cada tanda salen primero las que no has visto o más fallas.</p>
+<div class="label">Test por temas</div>
+${TOPICS.map(t => {
+  const n = vigentesDe(t.id).length;
+  const b = rt[t.id];
+  return `<button class="stage ${b != null && b >= 60 ? 'done' : ''}" data-act="go" data-v="reviewRun" data-k="vig" data-t="${t.id}" ${n ? '' : 'disabled'}><span class="n">${b != null && b >= 60 ? '✓' : t.id}</span><span class="grow"><b>${esc(t.title)}</b><span class="s">${plural(n, 'pregunta oficial', 'preguntas oficiales')}${n > TANDA ? ` · tandas de ${TANDA}` : ''}${b != null ? ` · mejor ${b} %` : ''}</span></span><span class="muted" aria-hidden="true">›</span></button>`;
+}).join('')}`;
   },
 };
 function pickReview(k, t) {
+  if (k === 'vig') {
+    const box = q => (P.L[q.id] ? P.L[q.id][0] : 0);
+    return shuffle(vigentesDe(t)).sort((a, b) => box(a) - box(b)).slice(0, TANDA);
+  }
   if (k === 'rep' || k === 'tema' || k === 'doble') {
     const box = q => (P.L[q.id] ? P.L[q.id][0] : 0);
     return shuffle(clavePickIds(k, t)).sort((a, b) => box(a) - box(b)).slice(0, 20);
@@ -208,13 +202,14 @@ function pickReview(k, t) {
 }
 VIEWS.reviewRun = {
   tab: p => (['rep', 'tema', 'doble'].includes(p.k) ? 'claves' : 'review'),
-  title: p => (p.k === 'rep' ? 'Las que se repiten' : p.k === 'doble' ? 'Temas que valen 2' : p.k === 'tema' ? 'Oficiales del tema ' + p.t : p.k === 'bank' ? 'Banco oficial' : p.k === 'fails' ? 'Repaso de fallos' : 'Repaso'),
+  title: p => (p.k === 'vig' ? 'Tema ' + p.t + ' · Test oficial' : p.k === 'rep' ? 'Las que se repiten' : p.k === 'doble' ? 'Temas que valen 2' : p.k === 'tema' ? 'Oficiales del tema ' + p.t : p.k === 'bank' ? 'Banco oficial' : p.k === 'fails' ? 'Repaso de fallos' : 'Repaso'),
   render(p) {
     if (!S.items) Object.assign(S, { kind: 'review', items: pickReview(p.k, p.t).map(q => present(q)), i: 0, ok: 0 });
-    if (!S.items.length) return `<div class="empty">${ICONS.anchor}<p>No hay preguntas pendientes. Vuelve mañana o haz un examen de tema.</p></div>`;
+    if (!S.items.length) return `<div class="empty">${ICONS.anchor}<p>Este tema no tiene preguntas oficiales vigentes.</p></div>`;
     if (S.end) {
       const sc = pct(S.ok, S.items.length);
-      const more = ['bank', 'rep', 'tema', 'doble'].includes(p.k) || (p.k === 'due' ? dueIds().length : Object.keys(P.L).filter(id => P.L[id][0] === 1).length);
+      if (p.k === 'vig' && !S.saved) { S.saved = true; P.rt = P.rt || {}; P.rt[p.t] = Math.max(P.rt[p.t] || 0, sc); save(); }
+      const more = ['bank', 'rep', 'tema', 'doble', 'vig'].includes(p.k) || (p.k === 'due' ? dueIds().length : Object.keys(P.L).filter(id => P.L[id][0] === 1).length);
       return `<div class="result"><div class="flag pop">${flagSvg(sc >= 60 ? 'C' : 'R')}</div><h2>Repaso terminado</h2><div class="big">${S.ok}<small>/${S.items.length}</small></div><p class="muted">${sc} % de aciertos.</p></div>
 ${quizReview(S.items)}
 <div class="stack" style="margin-top:16px">${more ? '<button class="btn wide" data-act="retry">Otra tanda</button>' : ''}<button class="btn ghost wide" data-act="back">Volver</button></div>`;
