@@ -129,6 +129,7 @@ const Store = {
   loadLocal() { try { return JSON.parse(localStorage.getItem(this.K) || 'null'); } catch (e) { return null; } },
   saveLocal() { try { localStorage.setItem(this.K, JSON.stringify(P)); } catch (e) { /* sin almacenamiento local */ } },
   async connect() {
+    if (window.PPER_WEB) return this.connectWeb();
     try {
       const c = window.claude;
       if (!c || typeof c.use !== 'function') return;
@@ -149,6 +150,18 @@ const Store = {
       if (cur().v === 'log') render(false);
     } catch (e) { this.ref = null; this.mode = 'local'; }
   },
+  async connectWeb() {
+    if (typeof AUTH === 'undefined' || !AUTH.user) return;
+    try {
+      const row = await AUTH.pull();
+      this.ref = 'web'; this.mode = 'cloud';
+      let remote = null;
+      if (row && row.p) { try { remote = normalize(JSON.parse(row.p)); } catch (e) { remote = null; } }
+      if (remote && remote.ts > P.ts) { P = remote; this.saveLocal(); applyTheme(); render(false); }
+      else if (P.ts > (remote ? remote.ts : 0) || !row) this.flush();
+      if (cur().v === 'log') render(false);
+    } catch (e) { this.ref = 'web'; this.mode = 'cloud'; /* sin conexión: se sube al guardar */ }
+  },
   save() {
     P.ts = Date.now();
     this.saveLocal();
@@ -161,7 +174,7 @@ const Store = {
     clearTimeout(this.timer); this.timer = null;
     if (this.writing) { this.dirty = true; return; }
     this.writing = true;
-    try { await this.ref.set({ v: 1, ts: P.ts, p: JSON.stringify(P) }); }
+    try { if (this.ref === 'web') await AUTH.push(P); else await this.ref.set({ v: 1, ts: P.ts, p: JSON.stringify(P) }); }
     catch (e) {
       const code = e && e.code;
       if (code === 'unavailable' && !retried) { this.writing = false; setTimeout(() => this.flush(true), 1200 + Math.random() * 1500); return; }

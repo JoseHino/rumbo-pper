@@ -15,6 +15,8 @@ const exams = JSON.parse(fs.readFileSync(path.join(base, 'exams_unique.json'), '
 const raw = JSON.parse(fs.readFileSync(path.join(base, 'exams_raw.json'), 'utf8'));
 // older official exams (2017-2024), transcribed and reviewed against current law; av = warning if the law changed
 const old = JSON.parse(fs.readFileSync(path.join(base, 'exams_old.json'), 'utf8'));
+// newest convocatoria (Nov 2026, Test 01 + plantilla definitiva), same format as exams_old.json, shown first
+const newest = JSON.parse(fs.readFileSync(path.join(base, 'exams_2026nov.json'), 'utf8'));
 // position -> topic map (exam order follows the syllabus)
 const POS2T = {};
 const layout = [[1,1],[2,1],[3,2],[4,2],[5,3],[6,4],[7,5],[8,6],[9,7],[10,7],[11,8],[12,8],[13,9],[14,10],[15,10],[16,11],[17,12],[18,12],[19,13],[20,14],[21,14],[22,15],[23,15],[24,16],[25,17],[26,17],[27,18],[28,18],[29,19],[30,19]];
@@ -58,7 +60,7 @@ for (const conv of ['2026abr', '2025nov', '2025abr']) {
 }
 // older official exams
 const OLD_CONVS = [];
-for (const q of old) {
+for (const q of [...newest, ...old]) {
   if (!OLD_CONVS.find(c => c.conv === q.conv)) OLD_CONVS.push({ conv: q.conv, name: q.convName, test: +q.id.split('-')[1], ids: [] });
   OLD_CONVS.find(c => c.conv === q.conv).ids.push(q.id);
   const o = { id: q.id, t: q.t, src: 'oficial', conv: q.conv, convName: q.convName, q: clean(q.q), o: q.o.map(clean), a: q.a, e: q.e };
@@ -67,6 +69,7 @@ for (const q of old) {
   if (!(o.t >= 1 && o.t <= 19)) problems.push(`old ${q.id}: bad topic`);
   official.push(o);
 }
+replicas.unshift(OLD_CONVS.shift()); // Nov 2026 first (most recent)
 OLD_CONVS.forEach(c => replicas.push(c));
 // «Claves»: groups of official questions that came up in two or more convocatorias (same fact, other wording)
 const claves = require(path.join(base, 'claves.js'));
@@ -129,7 +132,7 @@ for (const q of [...official, ...practice]) {
 console.log(problems.length ? 'PROBLEMS:\n' + problems.join('\n') : 'No problems');
 const WEIGHT = { 1: 2, 2: 2, 3: 1, 4: 1, 5: 1, 6: 1, 7: 2, 8: 2, 9: 1, 10: 2, 11: 1, 12: 2, 13: 1, 14: 2, 15: 2, 16: 1, 17: 2, 18: 2, 19: 2 };
 const data = {
-  version: '2026.11.17',
+  version: '2026.11.23',
   exam: { date: '2026-11-21', enrolFrom: '2026-10-15', enrolTo: '2026-10-31', place: 'Facultad de Derecho de la Universidad Autónoma de Madrid', questions: 30, options: 4, minutes: 60, pass: 18 },
   topics: topics.map(t => ({ id: t.id, title: t.title, law: t.law, scope: t.scope, intro: t.intro, update: t.update || null, weight: WEIGHT[t.id], cards: t.cards, tf: t.tf, pairs: t.pairs, cloze: t.cloze })),
   questions: [...official, ...practice],

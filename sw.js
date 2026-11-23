@@ -1,7 +1,7 @@
 /* Rumbo al PPER: funciona sin conexión.
    La app se pide primero a la red (así llegan las actualizaciones) y, si no hay red, sale de la caché.
    Las fuentes de Google se guardan la primera vez que se descargan. */
-const CACHE = 'rumbo-pper-v2';
+const CACHE = 'rumbo-pper-v3';
 const CORE = ['./', './index.html', './manifest.webmanifest', './icon.svg', './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png'];
 
 self.addEventListener('install', event => {
@@ -58,5 +58,5 @@ self.addEventListener('fetch', event => {
   if (request.method !== 'GET') return;
   const url = new URL(request.url);
   if (url.origin === self.location.origin) event.respondWith(networkFirst(request));
-  else if (url.hostname === 'fonts.googleapis.com' || url.hostname === 'fonts.gstatic.com') event.respondWith(cacheFirst(request));
+  else if (url.hostname === 'fonts.googleapis.com' || url.hostname === 'fonts.gstatic.com' || (url.hostname === 'cdn.jsdelivr.net' && url.pathname.includes('@supabase/supabase-js@'))) event.respondWith(cacheFirst(request));
 });

@@ -17,4 +17,5 @@ function start(data) {
 }
 const HOT = window.claude && window.claude.hot;
 try { if (HOT && typeof HOT.snapshot === 'function') HOT.snapshot(() => ({ nav: NAV.stack })); } catch (e) { /* sin recarga en caliente */ }
-if (HOT && typeof HOT.ready === 'function') HOT.ready(start); else start((HOT && HOT.data) || {});
+if (window.PPER_WEB && typeof AUTH !== 'undefined') AUTH.boot(() => start({}));
+else if (HOT && typeof HOT.ready === 'function') HOT.ready(start); else start((HOT && HOT.data) || {});

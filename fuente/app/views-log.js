@@ -33,10 +33,12 @@ VIEWS.log = {
 }).join('')}</ul></div>
 <div class="label">Insignias · ${Object.keys(P.badges).length}/${BADGES.length}</div>
 <div class="badges">${BADGES.map(b => `<div class="${P.badges[b.k] ? 'on' : ''}"><span class="ic"><span class="flag" style="display:inline-block;width:30px;height:20px;box-shadow:none">${flagSvg(b.f)}</span></span><b>${b.n}</b><br>${b.d}</div>`).join('')}</div>
+${window.PPER_WEB && typeof AUTH !== 'undefined' && AUTH.user ? `<div class="label">Tu cuenta</div>
+<div class="panel"><div class="row"><span class="grow">${AUTH.name ? `<b>${esc(AUTH.name)}</b><br>` : ''}<span class="small muted">${esc(AUTH.user.email || '')}</span></span><button class="btn ghost" data-act="logout">Cerrar sesión</button></div></div>` : ''}
 <div class="label">Ajustes</div>
 <div class="panel">
   <div class="row"><span class="grow">Apariencia</span><div class="seg" role="group" aria-label="Apariencia">${[['auto', 'Auto'], ['light', 'Día'], ['dark', 'Noche']].map(([k, n]) => `<button class="${P.theme === k ? 'on' : ''}" data-act="theme" data-k="${k}" aria-pressed="${P.theme === k}">${n}</button>`).join('')}</div></div>
-  <p class="small muted" style="margin:14px 0 0">${Store.mode === 'cloud' ? 'Tu progreso se guarda en tu cuenta, en un espacio privado que solo ves tú, y se sincroniza entre dispositivos.' : window.PPER_WEB ? 'Tu progreso se guarda en este dispositivo. Instala la app en la pantalla de inicio para que el navegador lo conserve: en iPhone, botón Compartir y «Añadir a pantalla de inicio»; en Android, menú ⋮ e «Instalar aplicación».' : 'Tu progreso se guarda en este navegador. Si abres la app con tu cuenta de Claude, se guardará también en tu cuenta.'}</p>
+  <p class="small muted" style="margin:14px 0 0">${Store.mode === 'cloud' ? (window.PPER_WEB ? 'Tu progreso se guarda en tu cuenta y se sincroniza entre dispositivos.' : 'Tu progreso se guarda en tu cuenta, en un espacio privado que solo ves tú, y se sincroniza entre dispositivos.') : window.PPER_WEB ? 'Tu progreso se guarda en este dispositivo. Instala la app en la pantalla de inicio para que el navegador lo conserve: en iPhone, botón Compartir y «Añadir a pantalla de inicio»; en Android, menú ⋮ e «Instalar aplicación».' : 'Tu progreso se guarda en este navegador. Si abres la app con tu cuenta de Claude, se guardará también en tu cuenta.'}</p>
   <button class="btn ghost wide" style="margin-top:14px;color:var(--bad)" data-act="reset">Borrar todo el progreso</button>
 </div>`;
   },

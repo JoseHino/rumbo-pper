@@ -38,8 +38,14 @@ data.replicas.forEach(r => console.log('replica', r.conv, r.ids.length, 'missing
 const LS = String.fromCharCode(0x2028), PS = String.fromCharCode(0x2029);
 const BS = String.fromCharCode(92);
 const json = JSON.stringify(data).replace(/</g, BS + 'u003c').split(LS).join(BS + 'u2028').split(PS).join(BS + 'u2029');
-const js = ['flags.js', 'core.js', 'views-home.js', 'views-games.js', 'views-sim.js', 'views-claves.js', 'views-log.js', 'main.js'].map(f => rd('app/' + f)).join('\n');
-if (/<\/script/i.test(js)) { console.log('script contains </script'); process.exit(1); }
+const files = ['flags.js', 'core.js', 'views-home.js', 'views-games.js', 'views-sim.js', 'views-claves.js', 'views-log.js'];
+const js = [...files, 'main.js'].map(f => rd('app/' + f)).join('\n');
+// web: accounts with e-mail verification (Supabase); the Claude artifact keeps its own private db
+const jsWeb = [...files, 'auth-web.js', 'main.js'].map(f => rd('app/' + f)).join('\n');
+const supa = JSON.parse(rd('web_config.json'));
+const withAuth = /^https:\/\//.test(supa.url || '') && !!supa.key; // until the Supabase project exists, the web stays open
+if (!withAuth) console.log('web: sin cuentas (web_config.json sin configurar)');
+if (/<\/script/i.test(jsWeb)) { console.log('script contains </script'); process.exit(1); }
 const fonts = `<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=IBM+Plex+Mono:wght@400;500&family=Spectral:ital,wght@0,500;0,600;1,400;1,600&display=swap" rel="stylesheet">`;
@@ -92,8 +98,13 @@ ${css}
 </head>
 <body>
 ${body}
-<script>window.PPER_WEB = true;</script>
-${script}
+${withAuth ? `<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>window.PPER_WEB = true; window.PPER_SUPA = ${JSON.stringify(supa)};</script>
+<script>
+"use strict";
+${jsWeb}
+</script>` : `<script>window.PPER_WEB = true;</script>
+${script}`}
 <script>
 if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
   window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });

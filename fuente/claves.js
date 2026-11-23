@@ -1,10 +1,10 @@
-// «Claves»: lo que de verdad cae en el examen, tema a tema, sacado de las 14 convocatorias oficiales (2017-2026).
+// «Claves»: lo que de verdad cae en el examen, tema a tema, sacado de las 15 convocatorias oficiales (2017-2026).
 // pos = números de pregunta en las convocatorias desde octubre de 2019 (antes iban una o dos posiciones desplazadas).
 // k = datos que han salido como respuesta oficial; n = en cuántas convocatorias salió ese dato (si se ha contado).
 // Solo hechos que aparecen en preguntas oficiales y siguen vigentes (las de normas derogadas no entran aquí).
 module.exports = [
   { t: 1, pos: '1-2', law: 'TRLPEMM (RDL 2/2011)', s: ["Clases de navegación (ámbito y prestación)","Objetivos de la Marina Mercante","Infracciones: gravedad, prescripción y responsables","Buque abandonado"], k: [
-    ['Navegación por su ámbito: interior, de cabotaje, exterior y extranacional. Por sus condiciones de prestación: regular y no regular.', 4],
+    ['Navegación por su ámbito: interior, de cabotaje, exterior y extranacional. Por sus condiciones de prestación: regular y no regular.', 5],
     ['No son objetivos de la Marina Mercante: la señalización marítima y ayudas a la navegación (es de Puertos del Estado), la protección de la biodiversidad ni la promoción de la competencia.', 4],
     ['Infracciones: prescriben a los 5 años las muy graves, 3 las graves y 1 las leves. Por contaminación desde buques responden solidariamente naviero, propietario, asegurador y capitán.'],
     ['Buque abandonado: lo declara el Consejo de Administración de la Autoridad Portuaria.', 3],
@@ -36,7 +36,7 @@ module.exports = [
     ['RD 1837/2000: navegando, los defectos que afecten a la seguridad se comunican a la autoridad del primer puerto de arribada, antes de llegar.', 2],
   ] },
   { t: 7, pos: '9-10', law: 'RD 62/2008 (concentraciones y pruebas náuticas)', s: ["Quién autoriza, dirige o suspende la prueba","Plazos (10 y 15 días)","Embarcaciones de apoyo, aros y personas a bordo","Regatas de altura e internacionales"], k: [
-    ['Retrasar, anular o suprimir la prueba si empeora la seguridad: el Capitán Marítimo.', 2],
+    ['Retrasar, anular o suprimir la prueba si empeora la seguridad: el Capitán Marítimo.', 3],
     ['Coordinador de seguridad: dirige internamente el evento y comunica su comienzo y su final.', 3],
     ['Plazos: autorización notificada en 10 días; en regatas internacionales, aviso con al menos 15 días.', 2],
     ['Vela infantil: 1 embarcación de apoyo por cada 10 participantes. Aros: uno más por cada 20 personas.', 4],
@@ -50,7 +50,7 @@ module.exports = [
     ['Permiso temporal: lo pide la empresa importadora, constructora o vendedora y lo resuelve la DGMM.'],
   ] },
   { t: 9, pos: '13', law: 'RD 607/1999 (seguro obligatorio)', s: ["Qué cubre y qué NO cubre el seguro","Navegar sin seguro (infracción grave)"], k: [
-    ['Sale en las 14 convocatorias. Cubre a terceros: muerte o lesiones, daños materiales, daños a buques por colisión o sin contacto y pérdidas económicas derivadas.', 14],
+    ['Sale en las 15 convocatorias. Cubre a terceros: muerte o lesiones, daños materiales, daños a buques por colisión o sin contacto y pérdidas económicas derivadas.', 15],
     ['NO cubre: los daños de la propia embarcación, la muerte o lesiones del patrón, las de quien paga el viaje ni las regatas (seguro especial).', 7],
     ['Navegar sin seguro es infracción grave. Si no lo llevas a bordo, tienes 5 días hábiles para justificarlo.', 3],
   ] },
@@ -83,13 +83,13 @@ module.exports = [
     ['Salvamento 1989: la recompensa no supera el valor de lo salvado; el capitán puede contratar el salvamento en nombre del propietario.'],
   ] },
   { t: 15, pos: '22-23', law: 'Ley 14/2014 (registro, nacionalidad e hipoteca)', s: ["Registro de Bienes Muebles","Hipoteca naval","Diarios, Bitácora y su conservación","Patente, pasavante y Certificado de Matrícula"], k: [
-    ['Titularidades, gravámenes e hipoteca naval se inscriben en la Sección de Buques del Registro de Bienes Muebles (Ministerio de Justicia).', 8],
+    ['Titularidades, gravámenes e hipoteca naval se inscriben en la Sección de Buques del Registro de Bienes Muebles (Ministerio de Justicia).', 9],
     ['Hipoteca naval: escritura pública, póliza notarial o documento privado; la acción prescribe a los 3 años.', 5],
     ['Diarios y cuadernos: se conservan 1 año. Cuaderno de Bitácora: con dos o más oficiales de puente. Actos del capitán con funciones públicas: en el Diario de Navegación.', 5],
     ['La Patente de Navegación acredita la nacionalidad; provisionalmente, pasavante. El Certificado de Matrícula acredita que está matriculado en España.', 6],
   ] },
   { t: 16, pos: '24', law: 'Código Civil', s: ["Testamentos: común, marítimo y su caducidad","Custodia del testamento por el capitán","Matrimonio y fallecimiento a bordo"], k: [
-    ['Testamentos en 10 de 14 convocatorias. El común es ológrafo, abierto o cerrado; el marítimo es especial.', 10],
+    ['Testamentos en 11 de 15 convocatorias. El común es ológrafo, abierto o cerrado; el marítimo es especial.', 11],
     ['Testamento marítimo de palabra ante dos testigos: solo con peligro de naufragio. Caduca a los 4 meses de desembarcar donde pueda testar normalmente.', 4],
     ['Los custodia el Capitán y se anotan en el Diario de Navegación.', 2],
     ['Nave presuntamente naufragada: declaración de fallecimiento al mes de las últimas noticias. Matrimonio en peligro de muerte a bordo: lo autoriza el Capitán.'],
@@ -101,8 +101,8 @@ module.exports = [
   ] },
   { t: 18, pos: '27-28', law: 'MARPOL: articulado y anexos IV y V', s: ["Qué son y qué no son aguas sucias","A qué buques se aplica el anexo IV","Zonas especiales y descargas del anexo V","Anexos facultativos"], k: [
     ['Anexo IV: buques nuevos de 400 GT o más, o de menos de 400 autorizados a llevar más de 15 personas. Certificado de aguas sucias: 5 años.'],
-    ['Qué no son aguas sucias: desagües de máquinas o de espacios de carga. Sí lo son los de inodoros, servicios médicos y espacios con animales vivos.', 5],
-    ['Anexo V: zonas especiales Mediterráneo, Báltico, mar Negro, mar Rojo, Golfos, mar del Norte, Antártico y Gran Caribe (el Cantábrico no). Comida sin triturar: en ruta y a más de 12 millas.', 6],
+    ['Qué no son aguas sucias: desagües de máquinas o de espacios de carga. Sí lo son los de inodoros, servicios médicos y espacios con animales vivos.', 6],
+    ['Anexo V: zonas especiales Mediterráneo, Báltico, mar Negro, mar Rojo, Golfos, mar del Norte, Antártico y Gran Caribe (el Cantábrico no). Comida sin triturar: en ruta y a más de 12 millas.', 7],
     ['Anexos facultativos: III, IV y V. MARPOL no tiene anexo VII.', 2],
   ] },
   { t: 19, pos: '29-30', law: 'RD 1185/2006 (radiocomunicaciones)', s: ["NAVTEX (518 y 490 kHz)","Zonas de navegación y su equipo","MMSI, operador restringido, canal 16"], k: [
