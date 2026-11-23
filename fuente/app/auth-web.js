@@ -28,7 +28,12 @@ const AUTH = {
     this.go();
   },
   async logout() {
-    try { await Store.flush(); await this.sb.auth.signOut(); } catch (e) { /* sin conexión */ }
+    try {
+      await Store.flush();
+      // espera a que termine cualquier guardado en curso antes de cerrar la sesión
+      for (let i = 0; i < 40 && (Store.writing || Store.dirty || Store.timer); i++) await new Promise(r => setTimeout(r, 250));
+      await this.sb.auth.signOut();
+    } catch (e) { /* sin conexión */ }
     try { localStorage.removeItem(Store.K); } catch (e) { /* sin almacenamiento */ }
     location.reload();
   },

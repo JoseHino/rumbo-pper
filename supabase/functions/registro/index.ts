@@ -7,7 +7,8 @@ import { createClient } from "jsr:@supabase/supabase-js@2";
 //   action "resend":        manda otro código de verificación.
 //   action "reset_request": manda un código para cambiar la contraseña.
 //   action "reset_confirm": comprueba ese código y pone la contraseña nueva.
-// Sin RESEND_API_KEY no se puede enviar correo y NO se crean cuentas: la verificación es obligatoria.
+// Los correos salen por Brevo (BREVO_API_KEY) desde MAIL_FROM_EMAIL (dominio seawithjose.es, autenticado en Brevo).
+// Sin clave no se puede enviar correo y NO se crean cuentas: la verificación es obligatoria.
 const cors = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -16,12 +17,13 @@ const cors = {
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { ...cors, "Content-Type": "application/json" } });
 
-const RESEND_KEY = Deno.env.get("RESEND_API_KEY") ?? "";
-const MAIL_FROM = Deno.env.get("MAIL_FROM") ?? "";
+const BREVO_KEY = Deno.env.get("BREVO_API_KEY") ?? "";
+const MAIL_FROM_EMAIL = Deno.env.get("MAIL_FROM_EMAIL") ?? "";
+const MAIL_FROM_NAME = Deno.env.get("MAIL_FROM_NAME") ?? "Rumbo al PPER";
 const CODE_MINUTES = 15;
 const MAX_ATTEMPTS = 5;
 const RESEND_WAIT_SECONDS = 60;
-const canMail = () => RESEND_KEY !== "" && MAIL_FROM !== "";
+const canMail = () => BREVO_KEY !== "" && MAIL_FROM_EMAIL !== "";
 
 type Purpose = "verify" | "reset";
 
@@ -67,15 +69,16 @@ async function sendCode(userId: string, email: string, name: string, purpose: Pu
   const ignore = purpose === "verify"
     ? "Si no has creado una cuenta en Rumbo al PPER, ignora este mensaje."
     : "Si no has pedido cambiar la contraseña, ignora este mensaje: tu contraseña sigue siendo la misma.";
-  const res = await fetch("https://api.resend.com/emails", {
+  const res = await fetch("https://api.brevo.com/v3/smtp/email", {
     method: "POST",
-    headers: { Authorization: `Bearer ${RESEND_KEY}`, "Content-Type": "application/json" },
+    headers: { "api-key": BREVO_KEY, "Content-Type": "application/json", accept: "application/json" },
     body: JSON.stringify({
-      from: MAIL_FROM,
-      to: [email],
+      sender: { name: MAIL_FROM_NAME, email: MAIL_FROM_EMAIL },
+      to: [{ email, name: name || email }],
       subject: c.subject(code),
-      text: `Hola ${name}:\n\n${c.lead.charAt(0).toUpperCase() + c.lead.slice(1)}\n\n${code}\n\nCaduca en ${CODE_MINUTES} minutos.\n\n${ignore}`,
-      html: `<div style="font-family:Arial,Helvetica,sans-serif;max-width:480px;margin:0 auto;padding:24px;color:#142236">
+      tags: ["rumbo-pper"],
+      textContent: `Hola ${name}:\n\n${c.lead.charAt(0).toUpperCase() + c.lead.slice(1)}\n\n${code}\n\nCaduca en ${CODE_MINUTES} minutos.\n\n${ignore}`,
+      htmlContent: `<div style="font-family:Arial,Helvetica,sans-serif;max-width:480px;margin:0 auto;padding:24px;color:#142236">
 <h2 style="margin:0 0 12px">${c.title}</h2>
 <p style="margin:0 0 16px">Hola ${esc(name)}: ${c.lead}</p>
 <p style="font-size:34px;font-weight:bold;letter-spacing:8px;margin:0 0 16px;padding:16px;background:#EAF1F4;border-radius:12px;text-align:center">${code}</p>
