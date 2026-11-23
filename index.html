@@ -350,6 +350,12 @@ body.locked .tabs,body.locked .top{display:none}
 .cnav .btn{flex:0 1 auto}
 .ckeys .cn{margin-top:6px}
 
+/* Repaso: fallos por tema */
+.fxt{margin-top:12px;border-top:1px solid var(--rule)}
+.fxt button{display:flex;gap:10px;align-items:center;width:100%;padding:10px 0;border:0;border-bottom:1px solid var(--rule);background:transparent;text-align:left;font-size:14px}
+.fxt button:last-child{border-bottom:0;padding-bottom:0}
+.fxt b{flex:none;min-width:28px;padding:1px 8px;border-radius:99px;background:var(--bad-soft);color:var(--bad);font-family:var(--f-mono);font-size:12px;text-align:center}
+
 </style>
 <style>:root{padding-top:env(safe-area-inset-top,0px)}</style>
 </head>
@@ -1416,13 +1422,22 @@ ACT.noop = () => {};
 const vigente = q => q.src === 'oficial' && !(q.av && (q.av.n === 'derogada' || q.av.n === 'fuera'));
 const vigentesDe = t => (BYT[t] || []).filter(vigente);
 const TANDA = 20;
+// fallos pendientes: última respuesta mal (caja 1), en exámenes de tema, simulacros o tests; salen al acertarlas
+const sirve = q => !(q.av && (q.av.n === 'derogada' || q.av.n === 'fuera'));
+const fallosIds = t => Object.keys(P.L).filter(id => QBY[id] && P.L[id][0] === 1 && sirve(QBY[id]) && (!t || QBY[id].t === t));
 VIEWS.review = {
   title: 'Repaso',
   render() {
     const rt = P.rt || {};
+    const fx = fallosIds();
+    const porTema = TOPICS.map(t => [t, fx.filter(id => QBY[id].t === t.id).length]).filter(x => x[1]);
     return `
-<p class="small muted" style="margin:16px 0 6px">Elige un tema y haz un test solo con sus preguntas oficiales de examen. Se quitan las de normas derogadas o que ya no están en el temario. En cada tanda salen primero las que no has visto o más fallas.</p>
+<div class="label" style="margin-top:16px">Tus fallos</div>
+<div class="panel">${fx.length ? `<div class="row"><div class="flag" style="width:48px;height:32px">${flagSvg('R')}</div><div class="grow"><b style="font-size:17px">${plural(fx.length, 'pregunta fallada', 'preguntas falladas')}</b><div class="small muted">De exámenes de tema, simulacros y tests. Cada una sale de aquí cuando la aciertas.</div></div></div>
+<button class="btn mag wide" style="margin-top:12px" data-act="go" data-v="reviewRun" data-k="fallos">Repasar mis fallos${fx.length > TANDA ? ` (tanda de ${TANDA})` : ` (${fx.length})`}</button>
+<div class="fxt">${porTema.map(([t, n]) => `<button data-act="go" data-v="reviewRun" data-k="fallos" data-t="${t.id}"><span class="grow">Tema ${t.id} · ${esc(t.title)}</span><b>${n}</b></button>`).join('')}</div>` : '<p class="small muted" style="margin:0">No tienes fallos pendientes. Las preguntas que falles en los exámenes de tema, los simulacros o los tests aparecerán aquí hasta que las aciertes.</p>'}</div>
 <div class="label">Test por temas</div>
+<p class="small muted" style="margin:0 0 8px">Elige un tema y haz un test solo con sus preguntas oficiales de examen. Se quitan las de normas derogadas o que ya no están en el temario. En cada tanda salen primero las que no has visto o más fallas.</p>
 ${TOPICS.map(t => {
   const n = vigentesDe(t.id).length;
   const b = rt[t.id];
@@ -1431,6 +1446,7 @@ ${TOPICS.map(t => {
   },
 };
 function pickReview(k, t) {
+  if (k === 'fallos') return shuffle(fallosIds(t)).slice(0, TANDA).map(id => QBY[id]);
   if (k === 'vig') {
     const box = q => (P.L[q.id] ? P.L[q.id][0] : 0);
     return shuffle(vigentesDe(t)).sort((a, b) => box(a) - box(b)).slice(0, TANDA);
@@ -1448,14 +1464,14 @@ function pickReview(k, t) {
 }
 VIEWS.reviewRun = {
   tab: p => (['rep', 'tema', 'doble'].includes(p.k) ? 'claves' : 'review'),
-  title: p => (p.k === 'vig' ? 'Tema ' + p.t + ' · Test oficial' : p.k === 'rep' ? 'Las que se repiten' : p.k === 'doble' ? 'Temas que valen 2' : p.k === 'tema' ? 'Oficiales del tema ' + p.t : p.k === 'bank' ? 'Banco oficial' : p.k === 'fails' ? 'Repaso de fallos' : 'Repaso'),
+  title: p => (p.k === 'fallos' ? (p.t ? 'Fallos del tema ' + p.t : 'Mis fallos') : p.k === 'vig' ? 'Tema ' + p.t + ' · Test oficial' : p.k === 'rep' ? 'Las que se repiten' : p.k === 'doble' ? 'Temas que valen 2' : p.k === 'tema' ? 'Oficiales del tema ' + p.t : p.k === 'bank' ? 'Banco oficial' : p.k === 'fails' ? 'Repaso de fallos' : 'Repaso'),
   render(p) {
     if (!S.items) Object.assign(S, { kind: 'review', items: pickReview(p.k, p.t).map(q => present(q)), i: 0, ok: 0 });
-    if (!S.items.length) return `<div class="empty">${ICONS.anchor}<p>Este tema no tiene preguntas oficiales vigentes.</p></div>`;
+    if (!S.items.length) return `<div class="empty">${ICONS.anchor}<p>${p.k === 'fallos' ? 'No te quedan fallos pendientes. ¡Buen trabajo!' : 'Este tema no tiene preguntas oficiales vigentes.'}</p></div>`;
     if (S.end) {
       const sc = pct(S.ok, S.items.length);
       if (p.k === 'vig' && !S.saved) { S.saved = true; P.rt = P.rt || {}; P.rt[p.t] = Math.max(P.rt[p.t] || 0, sc); save(); }
-      const more = ['bank', 'rep', 'tema', 'doble', 'vig'].includes(p.k) || (p.k === 'due' ? dueIds().length : Object.keys(P.L).filter(id => P.L[id][0] === 1).length);
+      const more = p.k === 'fallos' ? fallosIds(p.t).length : ['bank', 'rep', 'tema', 'doble', 'vig'].includes(p.k) || (p.k === 'due' ? dueIds().length : Object.keys(P.L).filter(id => P.L[id][0] === 1).length);
       return `<div class="result"><div class="flag pop">${flagSvg(sc >= 60 ? 'C' : 'R')}</div><h2>Repaso terminado</h2><div class="big">${S.ok}<small>/${S.items.length}</small></div><p class="muted">${sc} % de aciertos.</p></div>
 ${quizReview(S.items)}
 <div class="stack" style="margin-top:16px">${more ? '<button class="btn wide" data-act="retry">Otra tanda</button>' : ''}<button class="btn ghost wide" data-act="back">Volver</button></div>`;

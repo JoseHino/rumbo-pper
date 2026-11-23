@@ -329,3 +329,9 @@ body.locked .tabs,body.locked .top{display:none}
 .cnav{display:flex;justify-content:space-between;gap:10px;margin-top:18px}
 .cnav .btn{flex:0 1 auto}
 .ckeys .cn{margin-top:6px}
+
+/* Repaso: fallos por tema */
+.fxt{margin-top:12px;border-top:1px solid var(--rule)}
+.fxt button{display:flex;gap:10px;align-items:center;width:100%;padding:10px 0;border:0;border-bottom:1px solid var(--rule);background:transparent;text-align:left;font-size:14px}
+.fxt button:last-child{border-bottom:0;padding-bottom:0}
+.fxt b{flex:none;min-width:28px;padding:1px 8px;border-radius:99px;background:var(--bad-soft);color:var(--bad);font-family:var(--f-mono);font-size:12px;text-align:center}

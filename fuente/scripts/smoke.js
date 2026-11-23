@@ -105,6 +105,16 @@ async function run() {
     expect(S.end && P.rt && P.rt[17] === 100, 'best not saved');
     tab('review'); expect(document.querySelector('[data-k="vig"][data-t="17"]').classList.contains('done'), 'not marked');
   });
+  await step('repaso: tus fallos', () => {
+    tab('review'); const n0 = fallosIds().length; expect(n0 > 0, 'no fallos after sims');
+    expect(document.querySelector('#view [data-k="fallos"]:not([data-t])') && document.querySelectorAll('#view .fxt button').length > 0, 'fallos ui');
+    const t1 = +document.querySelector('#view .fxt button').dataset.t; const nt = fallosIds(t1).length;
+    click('.fxt button'); expect(S.items.length === Math.min(20, nt) && S.items.every(it => it.q.t === t1), 'fallos tema');
+    for (let k = 0; k < 25 && !S.end; k++) { ACT.qAns({ j: String(S.items[S.i].ans) }); ACT.qNext(); }
+    expect(fallosIds(t1).length === Math.max(0, nt - 20) && fallosIds().length === n0 - Math.min(20, nt), 'fallos not cleared');
+    tab('review'); click('[data-k="fallos"]:not([data-t])'); expect(S.items.every(it => P.L[it.q.id][0] === 1), 'not fallos');
+    tab('review');
+  });
   await step('claves: estructura', () => {
     tab('claves'); expect(document.querySelectorAll('.crow').length === 19 && document.querySelectorAll('.ctop li').length === 8 && document.querySelectorAll('.csec').length === 4, 'main');
     click('.crow[data-t="9"]'); expect(cur().v === 'clave' && cur().p.t === 9, 'detail');
