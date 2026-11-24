@@ -297,6 +297,14 @@ body.locked .tabs,body.locked .top{display:none}
 .auth-err{color:var(--bad);font-weight:600;font-size:14px}
 .auth-info{color:var(--ok);font-weight:600;font-size:14px}
 .auth-alt{margin-top:14px!important;text-align:center;font-size:14px}
+/* botón «pide tu acceso por Instagram»: llamativo y con latido */
+.ig-acceso{margin:18px 0 4px;padding:16px 14px 14px;border-radius:16px;background:var(--magenta-soft);text-align:center}
+.ig-acceso p{margin:0 0 12px!important;font-weight:650;color:var(--ink)}
+.btn-ig{display:inline-flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:52px;padding:0 18px;border-radius:999px;color:#fff;font-weight:800;font-size:16px;text-decoration:none;
+  background:linear-gradient(90deg,#F58529,#DD2A7B 45%,#8134AF 75%,#515BD4);box-shadow:0 0 0 0 rgba(221,42,123,.55);animation:latido-ig 1.8s ease-in-out infinite}
+.btn-ig svg{flex:none}
+.btn-ig:active{transform:scale(.97)}
+@keyframes latido-ig{0%{transform:scale(1);box-shadow:0 0 0 0 rgba(221,42,123,.55)}50%{transform:scale(1.04);box-shadow:0 0 0 12px rgba(221,42,123,0)}100%{transform:scale(1);box-shadow:0 0 0 0 rgba(221,42,123,0)}}
 .link{background:none;border:0;padding:4px;color:var(--magenta);font:inherit;font-weight:650;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
 
 /* Claves (estructura 2026-11-24) */

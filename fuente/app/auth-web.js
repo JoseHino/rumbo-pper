@@ -1,5 +1,5 @@
 /* ===== Cuentas (solo versión web): registro con verificación del correo y progreso en la nube ===== */
-const IG_ACCESO = `<p class="auth-info">¿Quieres acceso? Escríbenos por Instagram: <a href="https://www.instagram.com/rumboalexamen/" target="_blank" rel="noopener"><b>@rumboalexamen</b></a></p>`;
+const IG_ACCESO = `<div class="ig-acceso"><p>¿Aún no tienes acceso?</p><a class="btn-ig" href="https://www.instagram.com/rumboalexamen/" target="_blank" rel="noopener"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1" fill="currentColor" stroke="none"/></svg>Pídelo en Instagram</a></div>`;
 const AUTH = {
   dev: (() => {
     // identificador de este navegador: con él se impide tener la cuenta abierta en dos dispositivos a la vez
@@ -138,7 +138,7 @@ const AUTH = {
 <label>Contraseña<input name="pass" type="password" autocomplete="current-password" required minlength="8"></label>
 ${msg}<button class="btn wide" ${dis}>${this.busy ? 'Entrando…' : 'Entrar'}</button></form>
 <p class="auth-alt">¿Te han dado acceso y aún no tienes cuenta? <button class="link" data-auth-step="signup">Crea tu cuenta</button></p>
-<p class="auth-alt small muted">¿Aún no tienes acceso? Escríbenos por <a href="https://www.instagram.com/rumboalexamen/" target="_blank" rel="noopener">Instagram @rumboalexamen</a></p>
+${IG_ACCESO}
 <p class="auth-alt"><button class="link" data-auth-step="reset">He olvidado la contraseña</button></p>`],
       signup: ['Crear cuenta', `<form data-auth="signup">
 <label>Nombre<input name="name" autocomplete="name" required minlength="2" maxlength="80"></label>
