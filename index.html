@@ -1692,6 +1692,7 @@ ${EXAM.approx ? `<div class="panel"><div class="qmeta" style="margin-top:0"><spa
 };
 
 /* ===== Cuentas (solo versión web): registro con verificación del correo y progreso en la nube ===== */
+const IG_ACCESO = `<p class="auth-info">¿Quieres acceso? Escríbenos por Instagram: <a href="https://www.instagram.com/rumboalexamen/" target="_blank" rel="noopener"><b>@rumboalexamen</b></a></p>`;
 const AUTH = {
   dev: (() => {
     // identificador de este navegador: con él se impide tener la cuenta abierta en dos dispositivos a la vez
@@ -1732,7 +1733,7 @@ const AUTH = {
     if (!activo) {
       try { await this.sb.auth.signOut(); } catch (e) { /* sin conexión */ }
       try { localStorage.removeItem(Store.K); } catch (e) { /* sin almacenamiento */ }
-      this.paint('Sin acceso', `<p>La cuenta <b>${esc(user.email || '')}</b> no tiene el acceso activo.</p><p class="small muted">Si crees que es un error, escribe a quien te dio el acceso.</p><p class="auth-alt"><button class="link" data-auth-step="login">Entrar con otra cuenta</button></p>`);
+      this.paint('Sin acceso', `<p>La cuenta <b>${esc(user.email || '')}</b> no tiene el acceso activo.</p><p class="small muted">Para conseguir o renovar tu acceso, escríbenos por Instagram.</p>${IG_ACCESO}<p class="auth-alt"><button class="link" data-auth-step="login">Entrar con otra cuenta</button></p>`);
       return false;
     }
     // Nunca dos sesiones abiertas a la vez: este dispositivo entra solo si la cuenta no está abierta en otro
@@ -1822,7 +1823,7 @@ const AUTH = {
     document.getElementById('view').innerHTML = `<section class="auth"><div class="auth-head">${ICONS.rose}<h1>Rumbo al PPER</h1><p class="muted">App de estudio del examen de Patrón Profesional de Embarcaciones de Recreo</p></div><div class="panel"><h2>${title}</h2>${html}</div></section>`;
   },
   form() {
-    const e = esc(this.email), msg = (this.err ? `<p class="auth-err" role="alert">${esc(this.err)}</p>` : '') + (this.info ? `<p class="auth-info" role="status">${esc(this.info)}</p>` : '');
+    const e = esc(this.email), msg = (this.err ? `<p class="auth-err" role="alert">${esc(this.err)}</p>` : '') + (this.err && this.sinAcceso ? IG_ACCESO : '') + (this.info ? `<p class="auth-info" role="status">${esc(this.info)}</p>` : '');
     const dis = this.busy ? 'disabled' : '';
     const F = {
       login: ['Entrar', `<form data-auth="login">
@@ -1830,6 +1831,7 @@ const AUTH = {
 <label>Contraseña<input name="pass" type="password" autocomplete="current-password" required minlength="8"></label>
 ${msg}<button class="btn wide" ${dis}>${this.busy ? 'Entrando…' : 'Entrar'}</button></form>
 <p class="auth-alt">¿Te han dado acceso y aún no tienes cuenta? <button class="link" data-auth-step="signup">Crea tu cuenta</button></p>
+<p class="auth-alt small muted">¿Aún no tienes acceso? Escríbenos por <a href="https://www.instagram.com/rumboalexamen/" target="_blank" rel="noopener">Instagram @rumboalexamen</a></p>
 <p class="auth-alt"><button class="link" data-auth-step="reset">He olvidado la contraseña</button></p>`],
       signup: ['Crear cuenta', `<form data-auth="signup">
 <label>Nombre<input name="name" autocomplete="name" required minlength="2" maxlength="80"></label>
@@ -1859,7 +1861,7 @@ ${msg}<button class="btn wide" ${dis}>${this.busy ? 'Guardando…' : 'Guardar y 
     const first = document.querySelector('.auth input:not([value]), .auth input[value=""]');
     if (first && !this.busy) first.focus();
   },
-  setStep(s) { this.step = s; this.err = ''; this.info = ''; this.form(); },
+  setStep(s) { this.step = s; this.err = ''; this.info = ''; this.sinAcceso = false; this.form(); },
   async signIn(email, pass) {
     const { data, error } = await this.sb.auth.signInWithPassword({ email, password: pass });
     if (error) {
@@ -1879,7 +1881,7 @@ ${msg}<button class="btn wide" ${dis}>${this.busy ? 'Guardando…' : 'Guardar y 
     else if (kind === 'signup') {
       const pass = v('pass');
       const { ok, data } = await this.call({ action: 'signup', name: v('name').trim(), email: this.email, password: pass });
-      if (!ok) this.err = data.error || 'No se ha podido crear la cuenta. Inténtalo de nuevo.';
+      if (!ok) { this.sinAcceso = !!data.sinAcceso; this.err = data.sinAcceso ? 'Este correo no tiene acceso. Rumbo al PPER es solo para alumnos.' : (data.error || 'No se ha podido crear la cuenta. Inténtalo de nuevo.'); }
       else if (data.verify) { this.pass = pass; this.step = 'code'; }
       else done = await this.signIn(this.email, pass);
     } else if (kind === 'code') {

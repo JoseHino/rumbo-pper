@@ -1,7 +1,7 @@
 /* Rumbo al PPER: funciona sin conexión.
    La app se pide primero a la red (así llegan las actualizaciones) y, si no hay red, sale de la caché.
    Las fuentes de Google se guardan la primera vez que se descargan. */
-const CACHE = 'rumbo-pper-v8';
+const CACHE = 'rumbo-pper-v9';
 const CORE = ['./', './index.html', './manifest.webmanifest', './icon.svg', './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png', './icons/icon-512-maskable.png'];
 
 self.addEventListener('install', event => {
