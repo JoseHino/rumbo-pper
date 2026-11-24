@@ -1,5 +1,14 @@
 /* ===== Cuentas (solo versión web): registro con verificación del correo y progreso en la nube ===== */
 const AUTH = {
+  dev: (() => {
+    // identificador de este navegador: con él se impide usar la cuenta en dos dispositivos a la vez
+    try {
+      let d = localStorage.getItem('rumbo-pper-dispositivo');
+      if (!d) { d = (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2)); localStorage.setItem('rumbo-pper-dispositivo', d); }
+      return d;
+    } catch (e) { return 'sin-almacenamiento-' + Math.random().toString(36).slice(2); }
+  })(),
+  vigia: null,
   sb: null, user: null, name: '', step: 'login', email: '', pass: '', info: '', err: '', busy: false,
   cfg: window.PPER_SUPA || null,
   async call(body) {
@@ -18,10 +27,10 @@ const AUTH = {
     this.sb = window.supabase.createClient(this.cfg.url, this.cfg.key, { auth: { persistSession: true, autoRefreshToken: true, storageKey: 'rumbo-pper-auth' } });
     let session = null;
     try { session = (await this.sb.auth.getSession()).data.session; } catch (e) { session = null; }
-    if (session && session.user) { if (await this.enter(session.user)) return; this.step = 'login'; return; }
+    if (session && session.user) { if (await this.enter(session.user, false)) return; this.step = 'login'; return; }
     this.form();
   },
-  async enter(user) {
+  async enter(user, nuevo) {
     // Solo entra quien tiene el acceso activo (lista de alumnos). Sin conexión se deja pasar: ya entró antes.
     let activo = true;
     try { const { data, error } = await this.sb.rpc('tengo_acceso'); if (!error && data === false) activo = false; } catch (e) { /* sin conexión */ }
@@ -31,11 +40,46 @@ const AUTH = {
       this.paint('Sin acceso', `<p>La cuenta <b>${esc(user.email || '')}</b> no tiene el acceso activo.</p><p class="small muted">Si crees que es un error, escribe a quien te dio el acceso.</p><p class="auth-alt"><button class="link" data-auth-step="login">Entrar con otra cuenta</button></p>`);
       return false;
     }
+    // Un solo dispositivo a la vez: al iniciar sesión este pasa a ser el activo; al volver a abrir se comprueba que lo sigue siendo
+    try {
+      const { data, error } = await this.sb.rpc(nuevo ? 'reclamar_sesion' : 'sesion_valida', { d: this.dev });
+      if (!error && data === false) { await this.expulsar(user); return false; }
+    } catch (e) { /* sin conexión: se comprobará al volver la cobertura */ }
+    if (this.recargar) { location.reload(); return true; } // vuelve a entrar tras ser expulsado: arranque limpio
     this.user = user;
     this.name = (user.user_metadata && user.user_metadata.full_name) || '';
     document.body.classList.remove('locked');
+    this.vigilar();
     this.go();
     return true;
+  },
+  /* comprueba cada minuto, al volver a la app y al recuperar la conexión, que nadie ha entrado en otro dispositivo */
+  vigilar() {
+    clearInterval(this.vigia);
+    const mira = async () => {
+      if (!this.user || document.visibilityState === 'hidden') return;
+      try {
+        const { data, error } = await this.sb.rpc('sesion_valida', { d: this.dev });
+        if (!error && data === false) this.expulsar(this.user);
+      } catch (e) { /* sin conexión */ }
+    };
+    this.vigia = setInterval(mira, 60000);
+    this.mira = mira;
+    if (!this.oyentes) {
+      this.oyentes = true;
+      document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && this.mira) this.mira(); });
+      window.addEventListener('online', () => this.mira && this.mira());
+    }
+  },
+  async expulsar(user) {
+    clearInterval(this.vigia);
+    this.user = null; this.mira = null; this.recargar = true;
+    try { Store.ref = null; Store.mode = 'local'; } catch (e) { /* aún sin progreso */ }
+    try { await this.sb.auth.signOut({ scope: 'local' }); } catch (e) { /* sin conexión */ }
+    try { localStorage.removeItem(Store.K); } catch (e) { /* sin almacenamiento */ }
+    this.step = 'login'; this.err = ''; this.info = '';
+    this.email = (user && user.email) || this.email;
+    this.paint('Sesión cerrada', `<p>Tu cuenta se ha abierto en <b>otro dispositivo</b>. Rumbo al PPER solo se puede usar en un dispositivo a la vez.</p><p class="small muted">Tu progreso está guardado en tu cuenta. Si vuelves a entrar aquí, se cerrará en el otro.</p><p class="auth-alt"><button class="btn wide" data-auth-step="login">Entrar aquí</button></p>`);
   },
   async logout() {
     try {
@@ -98,7 +142,7 @@ ${msg}<button class="btn wide" ${dis}>${this.busy ? 'Guardando…' : 'Guardar y 
       if (error.code === 'email_not_confirmed') { this.pass = pass; this.call({ action: 'resend', email }); this.step = 'code'; this.info = 'Tu correo aún no está verificado: te hemos enviado un código nuevo.'; return; }
       this.err = error.status === 400 ? 'El correo o la contraseña no son correctos.' : 'No se ha podido entrar. Inténtalo de nuevo.'; return;
     }
-    if (await this.enter(data.user)) return true;
+    if (await this.enter(data.user, true)) return true;
     return 'bloqueado';
   },
   async submit(kind, f) {
@@ -140,9 +184,9 @@ ${msg}<button class="btn wide" ${dis}>${this.busy ? 'Guardando…' : 'Guardar y 
     const { error } = await this.sb.from('progreso').upsert({
       user_id: this.user.id, p: JSON.stringify(p), ts: p.ts, millas: p.xp || 0,
       respuestas: (p.st && p.st.ans) || 0, aciertos: (p.st && p.st.ok) || 0, dias: days,
-      simulacros: (p.sims || []).length, actualizado: new Date().toISOString(),
+      simulacros: (p.sims || []).length, actualizado: new Date().toISOString(), dispositivo: this.dev,
     });
-    if (error) throw error;
+    if (error) { if (this.mira) this.mira(); throw error; }
   },
 };
 document.addEventListener('submit', e => {
