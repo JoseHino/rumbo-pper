@@ -1,7 +1,7 @@
 /* ===== Cuentas (solo versión web): registro con verificación del correo y progreso en la nube ===== */
 const AUTH = {
   dev: (() => {
-    // identificador de este navegador: con él se impide usar la cuenta en dos dispositivos a la vez
+    // identificador de este navegador: con él se impide tener la cuenta abierta en dos dispositivos a la vez
     try {
       let d = localStorage.getItem('rumbo-pper-dispositivo');
       if (!d) { d = (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2)); localStorage.setItem('rumbo-pper-dispositivo', d); }
@@ -27,6 +27,8 @@ const AUTH = {
     this.sb = window.supabase.createClient(this.cfg.url, this.cfg.key, { auth: { persistSession: true, autoRefreshToken: true, storageKey: 'rumbo-pper-auth' } });
     let session = null;
     try { session = (await this.sb.auth.getSession()).data.session; } catch (e) { session = null; }
+    this.token = session ? session.access_token : null;
+    this.sb.auth.onAuthStateChange((ev, ses) => { this.token = ses ? ses.access_token : null; });
     if (session && session.user) { if (await this.enter(session.user, false)) return; this.step = 'login'; return; }
     this.form();
   },
@@ -40,12 +42,12 @@ const AUTH = {
       this.paint('Sin acceso', `<p>La cuenta <b>${esc(user.email || '')}</b> no tiene el acceso activo.</p><p class="small muted">Si crees que es un error, escribe a quien te dio el acceso.</p><p class="auth-alt"><button class="link" data-auth-step="login">Entrar con otra cuenta</button></p>`);
       return false;
     }
-    // Un solo dispositivo a la vez: al iniciar sesión este pasa a ser el activo; al volver a abrir se comprueba que lo sigue siendo
+    // Nunca dos sesiones abiertas a la vez: este dispositivo entra solo si la cuenta no está abierta en otro
     try {
-      const { data, error } = await this.sb.rpc(nuevo ? 'reclamar_sesion' : 'sesion_valida', { d: this.dev });
-      if (!error && data === false) { await this.expulsar(user); return false; }
+      const { data, error } = await this.sb.rpc('reclamar_sesion', { d: this.dev });
+      if (!error && data === false) { this.bloquear(user); return false; }
     } catch (e) { /* sin conexión: se comprobará al volver la cobertura */ }
-    if (this.recargar) { location.reload(); return true; } // vuelve a entrar tras ser expulsado: arranque limpio
+    if (this.recargar) { location.reload(); return true; } // vuelve tras un bloqueo: arranque limpio
     this.user = user;
     this.name = (user.user_metadata && user.user_metadata.full_name) || '';
     document.body.classList.remove('locked');
@@ -53,39 +55,68 @@ const AUTH = {
     this.go();
     return true;
   },
-  /* comprueba cada minuto, al volver a la app y al recuperar la conexión, que nadie ha entrado en otro dispositivo */
+  /* mientras la app está en pantalla avisa cada minuto de que la sesión sigue abierta; al ocultarla, la libera */
   vigilar() {
     clearInterval(this.vigia);
     const mira = async () => {
       if (!this.user || document.visibilityState === 'hidden') return;
       try {
-        const { data, error } = await this.sb.rpc('sesion_valida', { d: this.dev });
-        if (!error && data === false) this.expulsar(this.user);
+        const { data, error } = await this.sb.rpc('reclamar_sesion', { d: this.dev });
+        if (!error && data === false) this.bloquear(this.user);
       } catch (e) { /* sin conexión */ }
     };
     this.vigia = setInterval(mira, 60000);
     this.mira = mira;
     if (!this.oyentes) {
       this.oyentes = true;
-      document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && this.mira) this.mira(); });
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') { if (this.mira) this.mira(); }
+        else this.liberar();
+      });
+      window.addEventListener('pagehide', () => this.liberar());
       window.addEventListener('online', () => this.mira && this.mira());
     }
   },
-  async expulsar(user) {
+  /* deja la sesión libre para otro dispositivo (al cerrar la app, dejarla en segundo plano o cerrar sesión) */
+  liberar() {
+    if (!this.user || !this.sb) return;
+    try {
+      const token = this.token;
+      if (!token) return;
+      fetch(this.cfg.url + '/rest/v1/rpc/liberar_sesion', {
+        method: 'POST', keepalive: true,
+        headers: { 'Content-Type': 'application/json', apikey: this.cfg.key, Authorization: 'Bearer ' + token },
+        body: JSON.stringify({ d: this.dev }),
+      }).catch(() => {});
+    } catch (e) { /* sin conexión */ }
+  },
+  /* la cuenta está abierta en otro dispositivo: no se puede usar aquí hasta que la cierren allí */
+  bloquear(user) {
     clearInterval(this.vigia);
     this.user = null; this.mira = null; this.recargar = true;
     try { Store.ref = null; Store.mode = 'local'; } catch (e) { /* aún sin progreso */ }
-    try { await this.sb.auth.signOut({ scope: 'local' }); } catch (e) { /* sin conexión */ }
-    try { localStorage.removeItem(Store.K); } catch (e) { /* sin almacenamiento */ }
-    this.step = 'login'; this.err = ''; this.info = '';
     this.email = (user && user.email) || this.email;
-    this.paint('Sesión cerrada', `<p>Tu cuenta se ha abierto en <b>otro dispositivo</b>. Rumbo al PPER solo se puede usar en un dispositivo a la vez.</p><p class="small muted">Tu progreso está guardado en tu cuenta. Si vuelves a entrar aquí, se cerrará en el otro.</p><p class="auth-alt"><button class="btn wide" data-auth-step="login">Entrar aquí</button></p>`);
+    this.info = ''; this.err = '';
+    this.pintaBloqueo();
+  },
+  pintaBloqueo() {
+    const msg = (this.err ? `<p class="auth-err" role="alert">${esc(this.err)}</p>` : '');
+    this.paint('Cuenta abierta en otro dispositivo', `<p>La cuenta <b>${esc(this.email)}</b> está abierta ahora mismo en otro móvil u ordenador.</p><p>Rumbo al PPER se puede usar en cualquier dispositivo, pero <b>no en dos a la vez</b>.</p><p class="small muted">Ciérrala en el otro dispositivo (o déjala en segundo plano) y pulsa «Reintentar». Tu progreso está guardado en tu cuenta.</p>${msg}<button class="btn wide" data-auth-do="reintentar">Reintentar</button><p class="auth-alt"><button class="link" data-auth-do="salir">Entrar con otra cuenta</button></p>`);
+  },
+  async reintentar() {
+    try {
+      const { data, error } = await this.sb.rpc('reclamar_sesion', { d: this.dev });
+      if (!error && data === true) { location.reload(); return; }
+      this.err = error ? 'No hay conexión. Inténtalo cuando tengas cobertura.' : 'Sigue abierta en el otro dispositivo.';
+    } catch (e) { this.err = 'No hay conexión. Inténtalo cuando tengas cobertura.'; }
+    this.pintaBloqueo();
   },
   async logout() {
     try {
       await Store.flush();
       // espera a que termine cualquier guardado en curso antes de cerrar la sesión
       for (let i = 0; i < 40 && (Store.writing || Store.dirty || Store.timer); i++) await new Promise(r => setTimeout(r, 250));
+      try { await this.sb.rpc('liberar_sesion', { d: this.dev }); } catch (e) { /* sin conexión */ }
       await this.sb.auth.signOut();
     } catch (e) { /* sin conexión */ }
     try { localStorage.removeItem(Store.K); } catch (e) { /* sin almacenamiento */ }
@@ -198,6 +229,12 @@ document.addEventListener('submit', e => {
 document.addEventListener('click', e => {
   const s = e.target.closest('[data-auth-step]');
   if (s) { e.preventDefault(); AUTH.setStep(s.dataset.authStep); return; }
+  if (e.target.closest('[data-auth-do="reintentar"]')) { e.preventDefault(); AUTH.reintentar(); return; }
+  if (e.target.closest('[data-auth-do="salir"]')) {
+    e.preventDefault();
+    (async () => { try { await AUTH.sb.auth.signOut({ scope: 'local' }); } catch (x) { /* sin conexión */ } try { localStorage.removeItem(Store.K); } catch (x) { /* */ } location.reload(); })();
+    return;
+  }
   const d = e.target.closest('[data-auth-do="resend"]');
   if (d) {
     e.preventDefault();
