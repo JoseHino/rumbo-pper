@@ -2,7 +2,7 @@
 
 App de estudio, no oficial, para la prueba de conocimiento del certificado de **Patrón Profesional de Embarcaciones de Recreo (PPER)**, con el temario de la Resolución de 11 de junio de 2026 de la Dirección General de la Marina Mercante ([BOE-A-2026-15822](https://www.boe.es/boe/dias/2026/07/20/pdfs/BOE-A-2026-15822.pdf)).
 
-**Abrir la app: https://josehino.github.io/rumbo-pper/**
+**Abrir la app: https://pper.rumboalexamen.es/**
 
 - Los 19 temas del examen, cada uno con cinco etapas: fichas de lección, verdadero o falso contra el reloj, parejas, cifras clave y examen del tema.
 - 445 preguntas oficiales de 15 convocatorias (de octubre de 2017 a noviembre de 2026), publicadas por el [Ministerio de Transportes y Movilidad Sostenible](https://www.transportes.gob.es/marina-mercante/titulaciones/titulos-profesionales-formacion-maritima-documentos-y-guardia-de-la-gente-de-mar/titulaciones-profesionales/examenes-y-pruebas-nacionales) con su plantilla oficial de respuestas, y 218 preguntas de práctica. Las 326 anteriores a 2025 se han revisado contra la normativa vigente: las que preguntan normas derogadas o cambiadas llevan un aviso visible (rojo si la respuesta puede no valer hoy, ámbar si la norma cambió pero la respuesta sigue valiendo y gris si ya no está en el temario de 2026).
