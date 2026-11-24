@@ -1711,14 +1711,24 @@ const AUTH = {
     this.sb = window.supabase.createClient(this.cfg.url, this.cfg.key, { auth: { persistSession: true, autoRefreshToken: true, storageKey: 'rumbo-pper-auth' } });
     let session = null;
     try { session = (await this.sb.auth.getSession()).data.session; } catch (e) { session = null; }
-    if (session && session.user) return this.enter(session.user);
+    if (session && session.user) { if (await this.enter(session.user)) return; this.step = 'login'; return; }
     this.form();
   },
-  enter(user) {
+  async enter(user) {
+    // Solo entra quien tiene el acceso activo (lista de alumnos). Sin conexión se deja pasar: ya entró antes.
+    let activo = true;
+    try { const { data, error } = await this.sb.rpc('tengo_acceso'); if (!error && data === false) activo = false; } catch (e) { /* sin conexión */ }
+    if (!activo) {
+      try { await this.sb.auth.signOut(); } catch (e) { /* sin conexión */ }
+      try { localStorage.removeItem(Store.K); } catch (e) { /* sin almacenamiento */ }
+      this.paint('Sin acceso', `<p>La cuenta <b>${esc(user.email || '')}</b> no tiene el acceso activo.</p><p class="small muted">Si crees que es un error, escribe a quien te dio el acceso.</p><p class="auth-alt"><button class="link" data-auth-step="login">Entrar con otra cuenta</button></p>`);
+      return false;
+    }
     this.user = user;
     this.name = (user.user_metadata && user.user_metadata.full_name) || '';
     document.body.classList.remove('locked');
     this.go();
+    return true;
   },
   async logout() {
     try {
@@ -1744,13 +1754,13 @@ const AUTH = {
 <label>Correo<input name="email" type="email" autocomplete="email" required value="${e}"></label>
 <label>Contraseña<input name="pass" type="password" autocomplete="current-password" required minlength="8"></label>
 ${msg}<button class="btn wide" ${dis}>${this.busy ? 'Entrando…' : 'Entrar'}</button></form>
-<p class="auth-alt">¿Aún no tienes cuenta? <button class="link" data-auth-step="signup">Regístrate gratis</button></p>
+<p class="auth-alt">¿Te han dado acceso y aún no tienes cuenta? <button class="link" data-auth-step="signup">Crea tu cuenta</button></p>
 <p class="auth-alt"><button class="link" data-auth-step="reset">He olvidado la contraseña</button></p>`],
       signup: ['Crear cuenta', `<form data-auth="signup">
 <label>Nombre<input name="name" autocomplete="name" required minlength="2" maxlength="80"></label>
 <label>Correo<input name="email" type="email" autocomplete="email" required value="${e}"></label>
 <label>Contraseña <span class="small muted">(8 caracteres o más)</span><input name="pass" type="password" autocomplete="new-password" required minlength="8"></label>
-<p class="small muted">Te enviaremos un código de 6 cifras para comprobar que el correo es tuyo. Tu progreso se guardará en tu cuenta y lo tendrás en cualquier dispositivo.</p>
+<p class="small muted">Usa el mismo correo con el que te dieron acceso. Te enviaremos un código de 6 cifras para comprobar que es tuyo. Tu progreso se guardará en tu cuenta y lo tendrás en cualquier dispositivo.</p>
 ${msg}<button class="btn wide" ${dis}>${this.busy ? 'Creando…' : 'Crear cuenta'}</button></form>
 <p class="auth-alt">¿Ya tienes cuenta? <button class="link" data-auth-step="login">Entra</button></p>`],
       code: ['Verifica tu correo', `<form data-auth="code">
@@ -1781,8 +1791,8 @@ ${msg}<button class="btn wide" ${dis}>${this.busy ? 'Guardando…' : 'Guardar y 
       if (error.code === 'email_not_confirmed') { this.pass = pass; this.call({ action: 'resend', email }); this.step = 'code'; this.info = 'Tu correo aún no está verificado: te hemos enviado un código nuevo.'; return; }
       this.err = error.status === 400 ? 'El correo o la contraseña no son correctos.' : 'No se ha podido entrar. Inténtalo de nuevo.'; return;
     }
-    this.enter(data.user);
-    return true;
+    if (await this.enter(data.user)) return true;
+    return 'bloqueado';
   },
   async submit(kind, f) {
     const v = n => (f.elements[n] ? f.elements[n].value : '');

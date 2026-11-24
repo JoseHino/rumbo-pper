@@ -2,7 +2,7 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
 // Cuentas de Rumbo al PPER con correo y contraseña (endpoint público, por eso no exige JWT):
-//   action "signup":        crea la cuenta y manda un código para verificar el correo.
+//   action "signup":        crea la cuenta (solo correos de la tabla «permitidos») y manda un código para verificar el correo.
 //   action "verify":        comprueba ese código y confirma el correo.
 //   action "resend":        manda otro código de verificación.
 //   action "reset_request": manda un código para cambiar la contraseña.
@@ -117,6 +117,14 @@ async function tooSoon(userId: string, purpose: Purpose) {
   return !!row && Date.now() - new Date(row.last_sent_at).getTime() < RESEND_WAIT_SECONDS * 1000;
 }
 
+// Solo pueden crear cuenta los correos de la lista «permitidos» (alumnos con acceso activo)
+const SIN_ACCESO =
+  "Este correo no tiene acceso. Rumbo al PPER es solo para alumnos: pide tu acceso a quien te pasó el enlace y regístrate con ese mismo correo.";
+async function permitido(email: string) {
+  const { data } = await admin.from("permitidos").select("activo").eq("email", email).maybeSingle();
+  return !!data?.activo;
+}
+
 const cleanEmail = (b: Record<string, unknown>) => String(b.email ?? "").trim().toLowerCase();
 const cleanCode = (b: Record<string, unknown>) => String(b.code ?? "").replace(/\D/g, "");
 const validEmail = (e: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e) && e.length <= 200;
@@ -131,6 +139,7 @@ async function signup(body: Record<string, unknown>) {
   if (password.length < 8 || password.length > 72)
     return json({ error: "La contraseña debe tener al menos 8 caracteres." }, 400);
   if (!canMail()) return json({ error: "El registro no está disponible ahora mismo. Inténtalo más tarde." }, 503);
+  if (!(await permitido(email))) return json({ error: SIN_ACCESO, sinAcceso: true }, 403);
 
   const { data, error } = await admin.auth.admin.createUser({
     email,
