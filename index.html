@@ -408,7 +408,7 @@ body.locked .tabs,body.locked .top{display:none}
 #app{max-width:none;display:grid;grid-template-columns:168px minmax(0,1fr);grid-template-rows:auto 1fr;grid-template-areas:"side top" "side view"}
 #app:has(.tabs:empty){grid-template-columns:minmax(0,1fr);grid-template-areas:"top" "view"}
 .tabs:empty{display:none}
-.top{grid-area:top;justify-self:center;width:calc(100% - 64px);max-width:880px;padding:10px 0;background:transparent;color:var(--ink);border-bottom:1px solid var(--rule)}
+.top{grid-area:top;justify-self:center;width:calc(100% - 64px);max-width:880px;padding:10px 0;background:var(--bg);box-shadow:0 0 0 1px var(--bg),-40px 0 0 var(--bg),40px 0 0 var(--bg);color:var(--ink);border-bottom:1px solid var(--rule)}
 :root .top{--ink:#0E1B26;--ink-2:#46596A;--rule:#CFD9E1;--surface-2:#E1E8EE}
 .top .chip{color:var(--magenta);border-color:var(--rule)}
 .top h1{font-size:24px}
