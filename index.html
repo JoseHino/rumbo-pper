@@ -363,6 +363,22 @@ body.locked .tabs,body.locked .top{display:none}
 .fxt button{display:flex;gap:10px;align-items:center;width:100%;padding:10px 0;border:0;border-bottom:1px solid var(--rule);background:transparent;text-align:left;font-size:14px}
 .fxt button:last-child{border-bottom:0;padding-bottom:0}
 .fxt b{flex:none;min-width:28px;padding:1px 8px;border-radius:99px;background:var(--bad-soft);color:var(--bad);font-family:var(--f-mono);font-size:12px;text-align:center}
+/* --- ordenador: pestañas en un lateral y contenido más ancho --- */
+@media (min-width:900px){
+#app{max-width:1180px;display:grid;grid-template-columns:200px minmax(0,1fr);grid-template-rows:auto 1fr;grid-template-areas:"side top" "side view";column-gap:32px;padding:0 24px}
+#app:has(.tabs:empty){justify-items:center;grid-template-columns:minmax(0,1fr);grid-template-areas:"top" "view"}
+.tabs:empty{display:none}
+.top{grid-area:top;width:100%;max-width:860px;padding:8px 0}
+main{grid-area:view;width:100%;max-width:860px;padding:0 0 40px}
+.tabs{grid-area:side;position:sticky;top:0;bottom:auto;align-self:start;height:100vh;height:100dvh;display:flex;flex-direction:column;gap:4px;padding:72px 12px 24px 0;background:transparent;border-top:0;border-right:1px solid var(--rule)}
+.tabs button{flex-direction:row;justify-content:flex-start;gap:12px;padding:10px 14px;border-radius:12px;font-size:15px;letter-spacing:0;color:var(--ink-2)}
+.tabs button:hover{background:var(--surface-2)}
+.tabs button.on{background:var(--surface);color:var(--magenta);box-shadow:var(--shadow);border:1px solid var(--rule)}
+.tabs .badge{position:static;margin:0 0 0 auto}
+.hero{margin:16px 0 0;border:1px solid var(--rule);border-radius:20px}
+.hero h2{font-size:42px}
+.toast{left:calc(50% + 116px)}
+}
 
 </style>
 <style>:root{padding-top:env(safe-area-inset-top,0px)}</style>
