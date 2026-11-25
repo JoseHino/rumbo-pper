@@ -426,6 +426,52 @@ main{grid-area:view;justify-self:center;width:calc(100% - 64px);max-width:880px;
 }
 @media (min-width:900px) and (prefers-color-scheme:dark){:root:not([data-theme="light"]) .top{--ink:#DCE6EE;--ink-2:#8DA2B3;--rule:#1E3548;--surface-2:#142837}}
 @media (min-width:900px){:root[data-theme="dark"] .top{--ink:#DCE6EE;--ink-2:#8DA2B3;--rule:#1E3548;--surface-2:#142837}}
+/* --- guía del alumno --- */
+.hoy{margin-top:16px;border-left:3px solid var(--magenta)}
+.pasos{list-style:none;margin:10px 0 12px;padding:0;counter-reset:paso}
+.pasos li{counter-increment:paso;display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--rule)}
+.pasos li::before{content:counter(paso);flex:none;width:26px;height:26px;display:grid;place-items:center;border:1.5px solid var(--rule);border-radius:50%;font-family:var(--f-mono);font-size:12px;color:var(--ink-2)}
+.pasos li.ok::before{content:'✓';background:var(--ok);border-color:var(--ok);color:#fff}
+.pasos li.ok b{color:var(--ink-2);text-decoration:line-through;text-decoration-color:var(--ink-3)}
+.hoy .pasos li>button{flex:1;display:flex;align-items:center;gap:10px;padding:0;border:0;background:transparent;text-align:left}
+.pasos .grow>b,.pasos .grow>.small{display:block}
+.pasos .chev{color:var(--ink-3);font-size:20px}
+.guia{margin-top:16px}
+.guia .btn{flex:none;min-height:38px;padding:0 14px;font-size:14px}
+.guia .btn.ghost{border-color:var(--rule)}
+.bar.nota{position:relative;overflow:visible}
+.bar.nota>i{border-radius:inherit}
+.bar.nota>b{position:absolute;top:-4px;bottom:-4px;width:2px;margin-left:-1px;background:var(--signal)}
+.warnc{color:var(--bad)}
+.plan-res{margin-top:12px}
+.opt-line{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;padding:12px 14px;border:1px solid var(--rule);border-radius:6px;background:var(--surface);text-align:left}
+.opt-line.on{border-color:var(--magenta);box-shadow:inset 3px 0 0 var(--magenta)}
+.campo{width:100%;min-height:46px;padding:0 12px;border:1px solid var(--rule);border-radius:6px;background:var(--surface);color:var(--ink);font:inherit}
+.campo:focus{outline:2px solid var(--magenta);outline-offset:1px}
+.buscador{position:sticky;top:57px;z-index:5;margin:0 -16px;padding:12px 16px;background:var(--bg);border-bottom:1px solid var(--rule)}
+@media (min-width:900px){.buscador{top:62px;margin:0;padding:14px 0}}
+.res{display:flex;flex-direction:column;gap:4px;width:100%;margin-bottom:8px;padding:12px 14px;border:1px solid var(--rule);border-radius:6px;background:var(--surface);text-align:left;color:var(--ink)}
+button.res:hover{border-color:var(--magenta)}
+mark{background:rgba(255,107,26,.22);color:inherit;border-radius:2px;padding:0 1px}
+.glos{margin:0}
+.glos>div{padding:10px 0;border-top:1px solid var(--rule)}
+.glos>div:first-child{border-top:0;padding-top:0}
+.glos dt{font-weight:650}
+.glos dt .link{margin-left:6px;padding:0;font-weight:500}
+.glos dd{margin:2px 0 0;color:var(--ink-2);font-size:14.5px;line-height:1.5}
+.qtools{display:flex;flex-wrap:wrap;gap:4px 16px;margin-top:8px}
+.qtools .link{padding:2px 0;font-weight:600}
+.ficha-modal{width:100%;max-width:560px;max-height:86vh;overflow:auto;padding:18px;border-radius:6px;background:var(--surface)}
+.ficha-modal .lcard{padding:0;border:0;background:transparent}
+.tour{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));z-index:90;transform:translateX(-50%);width:min(420px,calc(100vw - 24px));padding:16px;border-radius:6px;background:var(--night);color:var(--night-ink);border:1px solid var(--night-line);box-shadow:0 18px 50px -12px rgba(0,0,0,.55)}
+.tour b{display:block;font-family:var(--f-display);font-size:19px;font-weight:600;margin-top:2px;color:#fff}
+.tour p{margin:4px 0 0;font-size:14.5px;line-height:1.5;color:var(--night-ink-2)}
+.tour .muted{color:var(--night-ink-2)}
+.tour .btn.ghost{color:var(--night-ink);border-color:var(--night-line)}
+.tour .btnrow{margin-top:12px}
+.tour.arriba{bottom:auto;top:calc(66px + env(safe-area-inset-top))}
+@media (min-width:900px){.tour{left:auto;right:32px;bottom:32px;transform:none}}
+.foco{position:relative;z-index:30;outline:3px solid var(--signal)!important;outline-offset:4px;border-radius:6px}
 
 </style>
 <style>:root{padding-top:env(safe-area-inset-top,0px)}</style>
@@ -732,8 +778,8 @@ function back() { leave(() => { clearTimers(); S = {}; if (NAV.stack.length > 1)
 function tab(v) { leave(() => { clearTimers(); S = {}; NAV.stack = [{ v, p: {} }]; render(true); }); }
 const TABS = [['home', 'Ruta', 'route'], ['claves', 'Claves', 'key'], ['review', 'Repaso', 'review'], ['simMenu', 'Simulacro', 'sim'], ['log', 'Bitácora', 'log'], ['info', 'Examen', 'info']];
 function tabOf(v, p) { const t = VIEWS[v] && VIEWS[v].tab; return (typeof t === 'function' ? t(p || {}) : t) || v; }
-function topChip() { return S.clock ? `<span class="chip clock" id="clock">${S.clock}</span>` : `<span class="chip" id="xpchip" title="Millas navegadas">${nf(P.xp)} mi</span>`; }
-function updateTopChip() { const c = document.getElementById('xpchip'); if (c) c.textContent = nf(P.xp) + ' mi'; }
+function topChip() { return S.clock ? `<span class="chip clock" id="clock">${S.clock}</span>` : `<span class="chip" id="xpchip" title="Nota estimada sobre 30">${chipTxt()}</span>`; }
+function updateTopChip() { const c = document.getElementById('xpchip'); if (c) c.textContent = chipTxt(); }
 function render(scrollTop) {
   const c = cur();
   const V = VIEWS[c.v];
@@ -741,7 +787,7 @@ function render(scrollTop) {
   const title = typeof V.title === 'function' ? V.title(c.p) : V.title;
   document.getElementById('top').innerHTML =
     (NAV.stack.length > 1 ? `<button class="iconbtn" data-act="back" aria-label="Volver">${ICONS.back}</button>` : '') +
-    `<h1>${esc(title)}</h1>` + topChip();
+    `<h1>${esc(title)}</h1>` + (NAV.stack.length === 1 && c.v !== 'buscar' ? `<button class="iconbtn" id="buscar" data-act="go" data-v="buscar" aria-label="Buscar en el temario">${ICONS.search}</button>` : '') + topChip();
   document.getElementById('view').innerHTML = html;
   const due = dueIds().length;
   const on = tabOf(c.v, c.p);
@@ -821,6 +867,7 @@ VIEWS.home = {
     const passed = TOPICS.filter(t => topicPassed(t.id)).length;
     const nt = nextTopic();
     const st = streak();
+    const ne = notaEstimada();
     const from = keyToNum(EXAM.enrolFrom), to = keyToNum(EXAM.enrolTo), d0 = today();
     const longDate = fmtDate(EXAM.date, { weekday: 'long', day: 'numeric', month: 'long' });
     let count;
@@ -842,18 +889,21 @@ VIEWS.home = {
   <div class="count">${count}</div>
   ${enrol ? `<p class="small" style="margin:10px 0 0">${enrol}</p>` : ''}
   <div class="logbook">
-    <div><span class="k">Millas</span><div class="v">${nf(P.xp)} <small>/ 2.500</small></div><div class="bar"><i style="width:${w(P.xp, GOAL.miles)}%"></i></div></div>
-    <div><span class="k">Días de mar</span><div class="v">${seaDays()} <small>/ 50</small></div><div class="bar"><i style="width:${w(seaDays(), GOAL.days)}%"></i></div></div>
-    <div><span class="k">Travesías</span><div class="v">${trips()} <small>/ 5</small></div><div class="bar"><i style="width:${w(trips(), GOAL.trips)}%"></i></div></div>
+    <div id="nota"><span class="k">Nota estimada</span><div class="v">≈ ${ne.v} <small>/ ${EXAM.questions}</small></div><div class="bar nota"><i style="width:${w(ne.x, EXAM.questions)}%"></i><b style="left:${pct(EXAM.pass, EXAM.questions)}%" title="Aprobado"></b></div></div>
+    <div><span class="k">Temas aprobados</span><div class="v">${passed} <small>/ 19</small></div><div class="bar"><i style="width:${w(passed, 19)}%"></i></div></div>
+    <div><span class="k">Racha</span><div class="v">${st} <small>${st === 1 ? 'día' : 'días'}</small></div><div class="bar"><i style="width:${w(st, 7)}%"></i></div></div>
   </div>
-  <div class="rank"><span class="tag">${r.name}</span><span class="muted small grow">${r.next ? `${nf(r.next[0] - P.xp)} millas para ${r.next[1]}` : 'Registro de millas completo'}</span><span class="small">Racha <b>${st}</b> ${st === 1 ? 'día' : 'días'}</span></div>
+  <div class="rank"><span class="muted small grow">${notaTexto(ne)}</span></div>
 </section>
-${introPanel()}
+${bienvenida()}
+${sesionHoy()}
+${planResumen()}
+${restanPanel()}
 <div class="quick">
-  <button data-act="continue"><b>Continuar</b><span>${cont}</span></button>
+  <button data-act="continue"><b>Seguir la ruta</b><span>${cont}</span></button>
   <button data-act="tab" data-v="review"><b>Test por temas</b><span>Solo preguntas oficiales</span></button>
-  <button data-act="tab" data-v="claves"><b>Claves</b><span>Lo que siempre cae</span></button>
-  <button data-act="tab" data-v="simMenu"><b>Exámenes reales</b><span>${DATA.replicas.length} convocatorias completas</span></button>
+  <button data-act="tab" data-v="claves"><b>Lo que más cae</b><span>Pregunta a pregunta del examen</span></button>
+  <button data-act="tab" data-v="simMenu"><b>Exámenes oficiales</b><span>${DATA.replicas.length} convocatorias completas</span></button>
 </div>
 <div class="label">La ruta · ${passed}/19 temas aprobados</div>
 <nav class="route" aria-label="Temas">
@@ -862,8 +912,8 @@ ${TOPICS.map(t => {
   const x = tpr(t.id);
   return `<button class="wp ${t.id === nt ? 'next' : ''}" data-act="go" data-v="topic" data-t="${t.id}">
     <span class="fl">${topicFlag(t.id)}</span>
-    <span><span class="k">WP ${pad(t.id)} · ${FLAG_INFO[L][0]}</span><span class="ti">${esc(t.title)}</span>
-    <span class="me">${starsHtml(x.stars || 0)}<span class="dots" aria-label="${stagesDone(t.id)} de 5 etapas">${STAGES.map(s => `<i class="${stageDone(t.id, s.k) ? 'on' : ''}"></i>`).join('')}</span>${t.id === nt ? '<span class="tag">Siguiente rumbo</span>' : ''}</span></span>
+    <span><span class="k">Tema ${pad(t.id)}</span><span class="ti">${esc(t.title)}</span>
+    <span class="me">${starsHtml(x.stars || 0)}<span class="dots" aria-label="${stagesDone(t.id)} de 5 etapas">${STAGES.map(s => `<i class="${stageDone(t.id, s.k) ? 'on' : ''}"></i>`).join('')}</span>${t.id === nt ? '<span class="tag">Siguiente</span>' : ''}</span></span>
     <span class="chev" aria-hidden="true">›</span></button>`;
 }).join('')}
 </nav>
@@ -1237,7 +1287,7 @@ function learnQuiz() {
 <div class="qmeta">${qTag(it.q)}<span class="tag off">Tema ${it.q.t}</span></div>
 ${avisoHtml(it.q)}<p class="q">${esc(it.q.q)}</p>
 ${it.order.map((_, j) => optBtn(it, j, 'qAns', done)).join('')}
-${done ? `<div class="fb ${ok ? '' : 'bad'}" id="fb" aria-live="polite"><span class="h">${ok ? 'Correcto' : `Incorrecto · la buena es la ${'ABCD'[it.ans]}`}</span>${it.q.e || ''}</div>
+${done ? `<div class="fb ${ok ? '' : 'bad'}" id="fb" aria-live="polite"><span class="h">${ok ? 'Correcto' : `Incorrecto · la buena es la ${'ABCD'[it.ans]}`}</span>${it.q.e || ''}${qTools(it.q)}</div>
 <button class="btn wide" style="margin-top:12px" data-act="qNext">${S.i >= S.items.length - 1 ? 'Ver resultado' : 'Siguiente'}</button>` : ''}`;
 }
 function learnKey(e) {
@@ -1272,7 +1322,7 @@ function quizReview(items) {
   if (!bad.length) return '';
   return `<div class="label">Repasa tus fallos</div>` + bad.map(it => `<div class="panel"><div class="qmeta" style="margin-top:0">${qTag(it.q)}</div>${avisoHtml(it.q)}<p class="q" style="font-size:15.5px">${esc(it.q.q)}</p>
 <p class="small" style="margin:0 0 6px">${it.pick != null ? `<span style="color:var(--bad)">Tu respuesta: ${esc(it.q.o[it.order[it.pick]])}</span><br>` : '<span class="muted">Sin responder</span><br>'}<span style="color:var(--ok)"><b>Correcta: ${esc(it.q.o[it.q.a])}</b></span></p>
-<div class="small muted">${it.q.e || ''}</div></div>`).join('');
+<div class="small muted">${it.q.e || ''}</div>${qTools(it.q)}</div>`).join('');
 }
 
 /* --- Examen del tema --- */
@@ -1480,7 +1530,7 @@ function simResult(p) {
 <div class="qgrid">${S.items.map((x, k) => `<button class="${x.pick == null ? 'blank' : x.pick === x.ans ? 'ok' : 'bad'} ${k === S.ri ? 'cur' : ''}${avCls(x.q)}" data-act="simSee" data-k="${k}" aria-label="Pregunta ${k + 1}">${k + 1}</button>`).join('')}</div>
 <div class="panel"><div class="qmeta" style="margin-top:0"><span class="tag off">Pregunta ${S.ri + 1}</span>${qTag(it.q)}<span class="tag off">Tema ${it.q.t}</span>${it.pick == null ? '<span class="tag warn">En blanco</span>' : ''}</div>
 ${avisoHtml(it.q)}<p class="q">${esc(it.q.q)}</p>${it.order.map((_, j) => optBtn(it, j, 'noop', true)).join('')}
-<div class="small muted">${it.q.e || ''}</div></div>
+<div class="small muted">${it.q.e || ''}</div>${qTools(it.q)}</div>
 <div class="label">Por temas</div>
 <div class="panel"><ul class="list">${topics.map(t => `<li><span class="fl">${topicFlag(t)}</span><span class="grow small">${t}. ${esc(TOPIC[t].title)}</span><span class="mono">${r.byT[t][0]}/${r.byT[t][1]}</span></li>`).join('')}</ul></div>
 <div class="stack" style="margin-top:16px"><button class="btn wide" data-act="retry">${p.c ? 'Repetir este examen' : 'Otro simulacro'}</button><button class="btn ghost wide" data-act="tab" data-v="simMenu">Volver</button></div>`;
@@ -1506,6 +1556,7 @@ VIEWS.review = {
 <div class="panel">${fx.length ? `<div class="row"><div class="flag" style="width:48px;height:32px">${flagSvg('R')}</div><div class="grow"><b style="font-size:17px">${plural(fx.length, 'pregunta fallada', 'preguntas falladas')}</b><div class="small muted">De exámenes de tema, simulacros y tests. Cada una sale de aquí cuando la aciertas.</div></div></div>
 <button class="btn mag wide" style="margin-top:12px" data-act="go" data-v="reviewRun" data-k="fallos">Repasar mis fallos${fx.length > TANDA ? ` (tanda de ${TANDA})` : ` (${fx.length})`}</button>
 <div class="fxt">${porTema.map(([t, n]) => `<button data-act="go" data-v="reviewRun" data-k="fallos" data-t="${t.id}"><span class="grow">Tema ${t.id} · ${esc(t.title)}</span><b>${n}</b></button>`).join('')}</div>` : '<p class="small muted" style="margin:0">No tienes fallos pendientes. Las preguntas que falles en los exámenes de tema, los simulacros o los tests aparecerán aquí hasta que las aciertes.</p>'}</div>
+${marcadasPanel()}
 <div class="label">Test por temas</div>
 <p class="small muted" style="margin:0 0 8px">Elige un tema y haz un test solo con sus preguntas oficiales de examen. Se quitan las de normas derogadas o que ya no están en el temario. En cada tanda salen primero las que no has visto o más fallas.</p>
 ${TOPICS.map(t => {
@@ -1517,6 +1568,7 @@ ${TOPICS.map(t => {
 };
 function pickReview(k, t) {
   if (k === 'fallos') return shuffle(fallosIds(t)).slice(0, TANDA).map(id => QBY[id]);
+  if (k === 'mk') return shuffle(marcadasIds()).slice(0, TANDA).map(id => QBY[id]);
   if (k === 'vig') {
     const box = q => (P.L[q.id] ? P.L[q.id][0] : 0);
     return shuffle(vigentesDe(t)).sort((a, b) => box(a) - box(b)).slice(0, TANDA);
@@ -1534,14 +1586,14 @@ function pickReview(k, t) {
 }
 VIEWS.reviewRun = {
   tab: p => (['rep', 'tema', 'doble'].includes(p.k) ? 'claves' : 'review'),
-  title: p => (p.k === 'fallos' ? (p.t ? 'Fallos del tema ' + p.t : 'Mis fallos') : p.k === 'vig' ? 'Tema ' + p.t + ' · Test oficial' : p.k === 'rep' ? 'Las que se repiten' : p.k === 'doble' ? 'Temas que valen 2' : p.k === 'tema' ? 'Oficiales del tema ' + p.t : p.k === 'bank' ? 'Banco oficial' : p.k === 'fails' ? 'Repaso de fallos' : 'Repaso'),
+  title: p => (p.k === 'mk' ? 'Preguntas marcadas' : p.k === 'fallos' ? (p.t ? 'Fallos del tema ' + p.t : 'Mis fallos') : p.k === 'vig' ? 'Tema ' + p.t + ' · Test oficial' : p.k === 'rep' ? 'Las que se repiten' : p.k === 'doble' ? 'Temas que valen 2' : p.k === 'tema' ? 'Oficiales del tema ' + p.t : p.k === 'bank' ? 'Banco oficial' : p.k === 'fails' ? 'Repaso de fallos' : 'Repaso'),
   render(p) {
     if (!S.items) Object.assign(S, { kind: 'review', items: pickReview(p.k, p.t).map(q => present(q)), i: 0, ok: 0 });
-    if (!S.items.length) return `<div class="empty">${ICONS.anchor}<p>${p.k === 'fallos' ? 'No te quedan fallos pendientes. ¡Buen trabajo!' : 'Este tema no tiene preguntas oficiales vigentes.'}</p></div>`;
+    if (!S.items.length) return `<div class="empty">${ICONS.anchor}<p>${p.k === 'mk' ? 'No tienes preguntas marcadas.' : p.k === 'fallos' ? 'No te quedan fallos pendientes. ¡Buen trabajo!' : 'Este tema no tiene preguntas oficiales vigentes.'}</p></div>`;
     if (S.end) {
       const sc = pct(S.ok, S.items.length);
       if (p.k === 'vig' && !S.saved) { S.saved = true; P.rt = P.rt || {}; P.rt[p.t] = Math.max(P.rt[p.t] || 0, sc); save(); }
-      const more = p.k === 'fallos' ? fallosIds(p.t).length : ['bank', 'rep', 'tema', 'doble', 'vig'].includes(p.k) || (p.k === 'due' ? dueIds().length : Object.keys(P.L).filter(id => P.L[id][0] === 1).length);
+      const more = p.k === 'mk' ? marcadasIds().length > TANDA : p.k === 'fallos' ? fallosIds(p.t).length : ['bank', 'rep', 'tema', 'doble', 'vig'].includes(p.k) || (p.k === 'due' ? dueIds().length : Object.keys(P.L).filter(id => P.L[id][0] === 1).length);
       return `<div class="result"><div class="flag pop">${flagSvg(sc >= 60 ? 'C' : 'R')}</div><h2>Repaso terminado</h2><div class="big">${S.ok}<small>/${S.items.length}</small></div><p class="muted">${sc} % de aciertos.</p></div>
 ${quizReview(S.items)}
 <div class="stack" style="margin-top:16px">${more ? '<button class="btn wide" data-act="retry">Otra tanda</button>' : ''}<button class="btn ghost wide" data-act="back">Volver</button></div>`;
@@ -1759,6 +1811,450 @@ ${EXAM.approx ? `<div class="panel"><div class="qmeta" style="margin-top:0"><spa
 <li>Normativa de cada tema: enlaces al BOE en la ficha del tema.</li></ul></div>
 <p class="foot">App de estudio no oficial. Ante cualquier duda manda el BOE.</p>`;
   },
+};
+
+/* ===== Guía del alumno: nota estimada, sesión de hoy, plan, prueba de nivel, buscador, glosario,
+   preguntas marcadas, fichas desde los fallos, recordatorios y recorrido de la app ===== */
+ICONS.search = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg>';
+
+/* --- nota estimada: cada tema pesa lo que pesa en el examen (suman 30) --- */
+function temaNota(t) {
+  let n = 0, c = 0;
+  (BYT[t] || []).forEach(q => { if (!sirve(q)) return; const l = P.L[q.id]; if (l) { n++; if (l[0] >= 2) c++; } });
+  // dos respuestas «virtuales» al 25 % (azar con 4 opciones) para que pocas respuestas no disparen la nota
+  return { n, c, p: (c + 0.5) / (n + 2) };
+}
+function notaEstimada() {
+  let s = 0, n = 0;
+  TOPICS.forEach(t => { const r = temaNota(t.id); s += t.weight * r.p; n += r.n; });
+  return { v: Math.round(s), x: s, resp: n };
+}
+function debiles(k) {
+  return TOPICS.map(t => { const r = temaNota(t.id); return { t: t.id, r, loss: t.weight * (1 - r.p) }; })
+    .filter(x => vigentesDe(x.t).length)
+    .sort((a, b) => b.loss - a.loss).slice(0, k);
+}
+function chipTxt() { return `≈ ${notaEstimada().v}/30`; }
+function notaTexto(ne) {
+  if (ne.resp < 25) return 'Estimación provisional: se afina a medida que respondes preguntas.';
+  if (ne.v >= EXAM.pass) return `Hoy aprobarías, con ${plural(ne.v - EXAM.pass, 'acierto', 'aciertos')} de margen.`;
+  return `Te faltan unos ${plural(EXAM.pass - ne.v, 'acierto', 'aciertos')} para el ${EXAM.pass}.`;
+}
+
+/* --- fecha del examen y plan --- */
+const examKey = () => (P.plan && P.plan.f) || EXAM.date;
+const diasExamen = () => keyToNum(examKey()) - today();
+const aprobados = () => TOPICS.filter(t => topicPassed(t.id)).length;
+function calcPlan(f, d) {
+  const left = keyToNum(f) - today();
+  if (left <= 0) return { err: 'Esa fecha ya ha pasado.' };
+  const rest = 19 - aprobados();
+  const reserva = left > 42 ? 14 : left > 21 ? 7 : 0;
+  const semanas = Math.max(1, (left - reserva) / 7);
+  const porSemana = rest / semanas;
+  const etapas = Math.max(1, Math.ceil((rest * 5) / Math.max(1, semanas * d)));
+  return { left, rest, reserva, porSemana, etapas, d };
+}
+function planTexto(c) {
+  if (c.err) return c.err;
+  if (!c.rest) return `Quedan ${plural(c.left, 'día', 'días')} y ya tienes los 19 temas aprobados: dedica cada sesión a exámenes oficiales y a tus fallos.`;
+  const r1 = Math.round(c.porSemana * 10) / 10;
+  const ps = c.porSemana < 1 ? 'menos de 1 tema por semana' : r1 === 1 ? '1 tema por semana' : `${String(r1).replace('.', ',')} temas por semana`;
+  return `Quedan ${plural(c.left, 'día', 'días')}. Para los ${plural(c.rest, 'tema que te falta', 'temas que te faltan')}: ${ps}, unas ${plural(c.etapas, 'etapa', 'etapas')} en cada día de estudio${c.reserva ? `, y las últimas ${c.reserva === 14 ? 'dos semanas' : 'semana'} solo exámenes oficiales y repaso` : ''}.`;
+}
+function planEstado() {
+  const pl = P.plan;
+  if (!pl) return null;
+  const f = keyToNum(pl.f), i = keyToNum(pl.i), hoy = today();
+  if (f <= hoy) return { t: 'La fecha de tu plan ya ha pasado. Pon la de tu próximo examen.', c: 'warn' };
+  const reserva = f - i > 42 ? 14 : f - i > 21 ? 7 : 0;
+  const tramo = Math.max(1, f - reserva - i);
+  const frac = Math.min(1, Math.max(0, (hoy - i) / tramo));
+  const esperado = Math.floor(pl.p0 + (19 - pl.p0) * frac);
+  const diff = aprobados() - esperado;
+  if (diff < 0) return { t: `Vas ${plural(-diff, 'tema', 'temas')} por detrás del plan: hoy conviene avanzar un poco más.`, c: 'warn' };
+  if (diff > 0) return { t: `Vas ${plural(diff, 'tema', 'temas')} por delante del plan.`, c: 'ok' };
+  return { t: 'Vas al día con tu plan.', c: 'ok' };
+}
+
+/* --- sesión de hoy --- */
+function hoyOk(k) { return P.hoy && P.hoy.d === dayKey() && P.hoy.ok && P.hoy.ok[k]; }
+function hoyMarca(k) { if (!P.hoy || P.hoy.d !== dayKey()) P.hoy = { d: dayKey(), ok: {} }; P.hoy.ok[k] = 1; save(); }
+function sesionItems() {
+  const it = [];
+  const nt = nextTopic();
+  if (nt) {
+    const st = STAGES.find(s => s.k === (nextStage(nt) || 'exam'));
+    it.push({ k: 'ruta', t: `Tema ${nt} · ${st.name}`, s: `${st.sub}. ${TOPIC[nt].title}.` });
+  }
+  const fx = fallosIds().length;
+  if (fx) it.push({ k: 'fallos', t: `Repasar ${plural(Math.min(fx, TANDA), 'pregunta fallada', 'preguntas falladas')}`, s: 'Vuelven hasta que las aciertes.' });
+  const ne = notaEstimada();
+  if (ne.resp >= 10) {
+    const d = debiles(1)[0];
+    if (d && d.t !== nt) it.push({ k: 'debil', t: `Test oficial del tema ${d.t}`, s: `${TOPIC[d.t].title}: es el que más nota te resta ahora.`, tt: d.t });
+  }
+  const dl = diasExamen();
+  if (aprobados() >= 8 || (dl >= 0 && dl <= 30)) it.push({ k: 'sim', t: 'Un examen oficial completo', s: `${EXAM.questions} preguntas en ${EXAM.minutes} minutos, como el día del examen.` });
+  return it;
+}
+function sesionHoy() {
+  const it = sesionItems();
+  if (!it.length) return '';
+  const pend = it.find(x => !hoyOk(x.k));
+  return `<div class="panel hoy" id="hoy">
+<div class="row"><b class="grow" style="font-size:18px">Tu sesión de hoy</b><span class="mono small muted">${it.filter(x => hoyOk(x.k)).length}/${it.length}</span></div>
+<ol class="pasos">${it.map(x => `<li class="${hoyOk(x.k) ? 'ok' : ''}"><button data-act="hoy" data-k="${x.k}" data-t="${x.tt || ''}"><span class="grow"><b>${esc(x.t)}</b><span class="small muted">${esc(x.s)}</span></span><span class="chev" aria-hidden="true">›</span></button></li>`).join('')}</ol>
+${pend ? `<button class="btn wide" data-act="hoy" data-k="${pend.k}" data-t="${pend.tt || ''}">${it.indexOf(pend) ? 'Seguir' : 'Empezar'}: ${esc(pend.t)}</button>` : '<p class="small" style="margin:10px 0 0"><b>Sesión de hoy completada.</b> Si te apetece seguir, la ruta y el repaso te esperan.</p>'}
+</div>`;
+}
+ACT.hoy = d => {
+  hoyMarca(d.k);
+  if (d.k === 'ruta') return ACT.continue();
+  if (d.k === 'fallos') return go('reviewRun', { k: 'fallos' });
+  if (d.k === 'debil') return go('reviewRun', { k: 'vig', t: +d.t });
+  if (d.k === 'sim') return tab('simMenu');
+};
+
+/* --- portada: primeros pasos, plan y lo que más resta --- */
+function bienvenida() {
+  if (P.guia && P.guia.x) return '';
+  const tour = P.guia && P.guia.tour;
+  const li = (ok, h, s, act, v, btn) => `<li class="${ok ? 'ok' : ''}"><span class="grow"><b>${h}</b><span class="small muted">${s}</span></span><button class="btn ghost" data-act="${act}" ${v ? `data-v="${v}"` : ''}>${btn}</button></li>`;
+  return `<div class="panel guia" id="guia"><b style="font-size:18px">Primeros pasos</b>
+<p class="small muted" style="margin:4px 0 0">Tres cosas y ya sabrás por dónde ir.</p>
+<ol class="pasos">
+${li(P.nivel, 'Prueba de nivel', '19 preguntas oficiales, una por tema. Unos 10 minutos.', 'go', 'nivel', P.nivel ? 'Repetir' : 'Hacer')}
+${li(P.plan, 'Fecha de tu examen', 'La app reparte los temas hasta ese día.', 'go', 'plan', P.plan ? 'Cambiar' : 'Poner')}
+${li(tour, 'Recorrido por la app', 'Un minuto para saber qué hay en cada sitio.', 'tour', '', tour ? 'Repetir' : 'Ver')}
+</ol>
+<button class="link small" data-act="guiaX">${P.nivel && P.plan && tour ? 'Hecho, ocultar' : 'Ocultar estos pasos'}</button></div>`;
+}
+ACT.guiaX = () => { P.guia = Object.assign({}, P.guia, { x: 1 }); save(); rerender(); toast('Los tienes en la Bitácora'); };
+function planResumen() {
+  if (!P.plan) return '';
+  const e = planEstado();
+  const c = calcPlan(P.plan.f, P.plan.d);
+  return `<div class="panel plan-res"><div class="row"><span class="grow"><span class="mono small muted">TU PLAN · ${esc(fmtDate(P.plan.f, { day: 'numeric', month: 'short', year: 'numeric' }).toUpperCase())}</span><br><b class="${e.c === 'warn' ? 'warnc' : ''}">${esc(e.t)}</b></span><button class="link small" data-act="go" data-v="plan">Cambiar</button></div>
+<p class="small muted" style="margin:6px 0 0">${esc(planTexto(c))}</p></div>`;
+}
+function restanPanel() {
+  const ne = notaEstimada();
+  if (ne.resp < 10) return '';
+  const d = debiles(3);
+  return `<div class="label">Lo que más nota te resta</div>
+<div class="panel"><ul class="list" style="margin:-6px 0">${d.map(x => `<li><span class="fl">${topicFlag(x.t)}</span><span class="grow small"><b>Tema ${x.t}.</b> ${esc(TOPIC[x.t].title)}<br><span class="muted">${x.r.n ? `${x.r.c} de ${x.r.n} acertadas la última vez` : 'Sin preguntas respondidas aún'} · vale ${plural(TOPIC[x.t].weight, 'pregunta', 'preguntas')} del examen</span></span><button class="btn ghost" data-act="go" data-v="reviewRun" data-k="vig" data-t="${x.t}">Test</button></li>`).join('')}</ul></div>`;
+}
+
+/* --- plan: formulario --- */
+VIEWS.plan = {
+  tab: 'home',
+  title: 'Fecha de tu examen',
+  render() {
+    const pl = P.plan || {};
+    if (!S.f) { S.f = pl.f || EXAM.date; S.d = pl.d || 4; }
+    const c = calcPlan(S.f, S.d);
+    const conv = S.f === EXAM.date;
+    return `
+<div class="label" style="margin-top:16px">¿Cuándo te examinas?</div>
+<div class="panel">
+  <button class="opt-line ${conv ? 'on' : ''}" data-act="planConv"><b>Próxima convocatoria</b><span class="small muted">${esc(EXAM.name)} · ${fmtDate(EXAM.date, { month: 'long', year: 'numeric' })}${EXAM.approx ? ' (fecha aproximada)' : ''}</span></button>
+  <label class="small muted" for="planf" style="display:block;margin:14px 0 6px">U otra fecha</label>
+  <input type="date" id="planf" class="campo" value="${S.f}" min="${dayKey()}">
+</div>
+<div class="label">¿Cuántos días a la semana puedes estudiar?</div>
+<div class="seg" role="group" aria-label="Días por semana">${[2, 3, 4, 5, 6, 7].map(n => `<button class="${S.d === n ? 'on' : ''}" data-act="planD" data-k="${n}">${n}</button>`).join('')}</div>
+<div class="panel" style="margin-top:16px"><b>Así queda</b><p class="small" style="margin:6px 0 0">${esc(planTexto(c))}</p></div>
+<button class="btn wide" style="margin-top:16px" data-act="planOk" ${c.err ? 'disabled' : ''}>Guardar mi plan</button>
+${P.plan ? '<button class="btn ghost wide" style="margin-top:10px" data-act="planDel">Quitar el plan</button>' : ''}`;
+  },
+  after() {
+    const el = document.getElementById('planf');
+    if (el) el.addEventListener('change', () => { if (el.value) { S.f = el.value; rerender(); } });
+  },
+};
+ACT.planConv = () => { S.f = EXAM.date; rerender(); };
+ACT.planD = d => { S.d = +d.k; rerender(); };
+ACT.planOk = () => {
+  P.plan = { f: S.f, d: S.d, i: dayKey(), p0: aprobados() };
+  save(); toast('Plan guardado'); tab('home');
+};
+ACT.planDel = () => { delete P.plan; save(); tab('home'); };
+
+/* --- prueba de nivel: una pregunta oficial vigente por tema --- */
+VIEWS.nivel = {
+  tab: 'home',
+  title: 'Prueba de nivel',
+  render() {
+    if (!S.items) {
+      return `<div class="result"><div class="flag pop">${flagSvg('Q')}</div><h2>Prueba de nivel</h2>
+<p class="muted">${TOPICS.length} preguntas de exámenes oficiales, una de cada tema. Unos 10 minutos. No cuenta como examen: sirve para saber de dónde partes y para afinar tu nota estimada.</p></div>
+<button class="btn wide" data-act="nivelGo">Empezar</button>`;
+    }
+    if (S.end) {
+      if (!S.saved) { S.saved = true; P.nivel = { d: dayKey(), ok: S.ok, n: S.items.length }; save(); }
+      const ne = notaEstimada();
+      const mal = S.items.filter(x => x.pick !== x.ans).map(x => x.q.t);
+      return `<div class="result"><div class="flag pop">${flagSvg('C')}</div><h2>Ya sabes de dónde partes</h2>
+<div class="big">${S.ok}<small>/${S.items.length}</small></div><p class="muted">Nota estimada ahora: <b>≈ ${ne.v}/30</b>. ${notaTexto(ne)}</p></div>
+<div class="panel"><ul class="list" style="margin:-6px 0">${S.items.map(x => `<li><span class="fl">${topicFlag(x.q.t)}</span><span class="grow small"><b>${x.q.t}.</b> ${esc(TOPIC[x.q.t].title)}</span><span class="mono" style="color:var(${x.pick === x.ans ? '--ok' : '--bad'})">${x.pick === x.ans ? 'Bien' : 'Mal'}</span></li>`).join('')}</ul></div>
+${mal.length ? `<p class="small muted">Los temas en «Mal» son por donde más nota puedes ganar. Los verás en «Lo que más nota te resta», en la portada.</p>` : ''}
+${quizReview(S.items)}
+<div class="stack" style="margin-top:16px">${P.plan ? '' : '<button class="btn wide" data-act="go" data-v="plan">Poner la fecha de mi examen</button>'}<button class="btn ${P.plan ? '' : 'ghost'} wide" data-act="tab" data-v="home">Ir a mi sesión de hoy</button></div>`;
+    }
+    return learnQuiz();
+  },
+  key: learnKey,
+};
+ACT.nivelGo = () => {
+  S.items = TOPICS.map(t => shuffle(vigentesDe(t.id))[0]).filter(Boolean).map(q => present(q));
+  Object.assign(S, { kind: 'nivel', i: 0, ok: 0 });
+  render(true);
+};
+
+/* --- la ficha de una pregunta y preguntas marcadas --- */
+const normTxt = s => String(s == null ? '' : s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+const plainTxt = s => String(s == null ? '' : s).replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ');
+const STOP = new Set('sobre entre desde hasta donde cuando cuales cuantos cuantas todos todas otros otras puede pueden debe deben segun tiene tienen siempre nunca mismo misma deber mediante cualquier ninguna ninguno ademas tambien correcta correcto respuesta pregunta siguiente siguientes'.split(' '));
+const fichaCache = {};
+function fichaDe(q) {
+  if (fichaCache[q.id] != null) return fichaCache[q.id];
+  const t = TOPIC[q.t];
+  const words = new Set(normTxt(plainTxt(q.q + ' ' + q.o[q.a] + ' ' + (q.e || ''))).split(/[^a-z0-9ñ]+/).filter(w => w.length >= 5 && !STOP.has(w)));
+  let best = 0, bi = 0;
+  t.cards.forEach((c, i) => {
+    const title = normTxt(plainTxt(c.t)), body = normTxt(plainTxt(c.b + ' ' + (c.tip || '')));
+    let s = 0;
+    words.forEach(w => { if (title.includes(w)) s += 2; else if (body.includes(w)) s += 1; });
+    if (s > best) { best = s; bi = i; }
+  });
+  return (fichaCache[q.id] = bi);
+}
+function qTools(q) {
+  if (!q) return '';
+  const m = P.mk && P.mk[q.id];
+  return `<div class="qtools"><button class="link small" data-act="ficha" data-t="${q.t}" data-c="${fichaDe(q)}">Ver la ficha</button><button class="link small" data-act="marcar" data-id="${esc(q.id)}" aria-pressed="${m ? 'true' : 'false'}">${m ? '✓ Marcada para repasar' : 'Marcar para repasar'}</button></div>`;
+}
+ACT.marcar = (d, el) => {
+  P.mk = P.mk || {};
+  if (P.mk[d.id]) delete P.mk[d.id]; else P.mk[d.id] = 1;
+  save();
+  const on = !!P.mk[d.id];
+  if (el) { el.textContent = on ? '✓ Marcada para repasar' : 'Marcar para repasar'; el.setAttribute('aria-pressed', String(on)); }
+  toast(on ? 'Marcada: la tienes en Repaso' : 'Desmarcada');
+};
+const marcadasIds = () => Object.keys(P.mk || {}).filter(id => QBY[id]);
+function marcadasPanel() {
+  const n = marcadasIds().length;
+  return `<div class="label">Marcadas</div><div class="panel">${n
+    ? `<div class="row"><span class="grow"><b>${plural(n, 'pregunta marcada', 'preguntas marcadas')}</b><br><span class="small muted">Las que marcaste para volver a verlas. Se quedan hasta que las desmarques.</span></span></div><button class="btn ghost wide" style="margin-top:12px" data-act="go" data-v="reviewRun" data-k="mk">Repasar las marcadas</button>`
+    : '<p class="small muted" style="margin:0">Cuando una pregunta se te atragante, pulsa «Marcar para repasar» debajo de la explicación y aparecerá aquí.</p>'}</div>`;
+}
+ACT.ficha = d => {
+  const t = TOPIC[+d.t]; const i = +d.c || 0;
+  if (!t || !t.cards[i]) return;
+  const m = document.createElement('div');
+  m.className = 'modal';
+  m.innerHTML = `<div class="ficha-modal" role="dialog" aria-modal="true" aria-label="Ficha del tema ${t.id}"><div class="mono small muted" style="margin-bottom:6px">TEMA ${t.id} · ${esc(t.title.toUpperCase())}</div>${cardHtml(t.cards[i], i, t.cards.length, true)}<div class="btnrow"><button class="btn ghost" data-m="tema">Abrir el tema</button><button class="btn" data-m="0">Cerrar</button></div></div>`;
+  m.addEventListener('click', e => {
+    const b = e.target.closest('[data-m]');
+    if (e.target !== m && !b) return;
+    e.stopPropagation(); m.remove();
+    if (b && b.dataset.m === 'tema') go('topic', { t: t.id });
+  });
+  m.addEventListener('keydown', e => { if (e.key === 'Escape') m.remove(); });
+  document.body.appendChild(m);
+  m.querySelector('[data-m="0"]').focus();
+};
+
+/* --- glosario --- */
+const GLOSARIO = [
+  ['Abanderamiento', 'Dar a un barco la nacionalidad española e inscribirlo en el registro. Le da derecho a llevar la bandera.', 8],
+  ['Armador', 'Quien explota el buque. Nombra y cesa al capitán y contrata la dotación.', 2],
+  ['Artefacto naval', 'Construcción flotante destinada a quedarse en un punto fijo (o un buque amarrado o fondeado permanentemente para otra actividad).', 2],
+  ['Buque', 'Vehículo con cubierta corrida y eslora de 24 m o más. Si no tiene cubierta corrida o mide menos, es una embarcación.', 2],
+  ['Calado', 'Distancia vertical entre la línea de flotación y la parte más baja del casco.', null],
+  ['Capitanía Marítima', 'Oficina de la Administración marítima en cada puerto importante: despachos, inspecciones, registro y seguridad de la navegación en su zona.', 4],
+  ['Categoría de diseño', 'Letra (A, B, C o D) que da el marcado CE según el viento y las olas que aguanta el barco. Decide en qué zonas puede navegar: A, zonas 1 a 7; B, 2 a 7; C, 4 a 7; D, solo zona 7.', 12],
+  ['Despacho', 'Autorización de la Capitanía Marítima para que un barco salga a navegar.', 5],
+  ['DGMM', 'Dirección General de la Marina Mercante, del Ministerio de Transportes. Es quien convoca el examen del PPER.', 3],
+  ['Dotación', 'Conjunto de personas empleadas a bordo: capitán, oficiales y subalternos.', 2],
+  ['Embarcación', 'Barco sin cubierta corrida o de menos de 24 m de eslora.', 2],
+  ['Eslora', 'Longitud del barco de proa a popa.', null],
+  ['Francobordo', 'Altura del costado que queda por encima del agua, desde la flotación hasta la cubierta.', 7],
+  ['Hipoteca naval', 'Hipoteca sobre un buque, embarcación o artefacto naval, incluso en construcción. Sigue al barco aunque cambie de dueño.', 15],
+  ['LNM', 'Ley 14/2014, de Navegación Marítima. Regula el buque, su propiedad, la dotación, los contratos y los accidentes.', 2],
+  ['LSD', 'Llamada selectiva digital: alerta automática por radio (VHF, MF o HF) que identifica al barco con su MMSI.', 19],
+  ['Lista sexta', 'Registro de las embarcaciones de recreo que se usan con fines comerciales (por ejemplo, alquiler).', 8],
+  ['Lista séptima', 'Registro de las embarcaciones de recreo de uso privado, sin ánimo de lucro.', 8],
+  ['Manga', 'Anchura máxima del barco.', null],
+  ['Marcado CE', 'Marca que acredita que una embarcación de recreo cumple los requisitos de seguridad europeos. Lleva asociada su categoría de diseño.', 13],
+  ['MARPOL', 'Convenio internacional para prevenir la contaminación desde buques. Su anexo IV trata las aguas sucias y el V, las basuras.', 18],
+  ['Matrícula', 'Identificación del barco en el registro: lista, provincia marítima, distrito, folio y año de inscripción.', 8],
+  ['MMSI', 'Número de nueve cifras que identifica la radio de un barco. Lo asigna la DGMM y hace falta para la LSD y las radiobalizas.', 19],
+  ['NAVTEX', 'Receptor que imprime o muestra avisos meteorológicos y a los navegantes emitidos en 518 kHz.', 19],
+  ['Naviero (empresa naviera)', 'Quien explota buques mercantes, propios o ajenos.', 1],
+  ['Pasaje', 'Las personas que van a bordo sin formar parte de la dotación.', null],
+  ['PPER', 'Patrón Profesional de Embarcaciones de Recreo. Permite gobernar recreo de listas 6.ª y 7.ª de hasta 24 m y 12 pasajeros. Para presentarse hay que tener el título de Capitán de Yate.', null],
+  ['Radiobaliza', 'Equipo que, al activarse, envía por satélite una alerta de socorro con la posición del barco (406 MHz).', 19],
+  ['Respondedor de radar', 'Equipo de supervivencia que aparece en las pantallas de radar cercanas (9 GHz) para que localicen la balsa o el barco.', 19],
+  ['Rol', 'Documento oficial con los datos del barco, su tripulación y los despachos.', 5],
+  ['SASEMAR', 'Sociedad de Salvamento y Seguridad Marítima (Salvamento Marítimo). Coordina el rescate y la lucha contra la contaminación en el mar.', 14],
+  ['SMSSM', 'Sistema Mundial de Socorro y Seguridad Marítimos (GMDSS en inglés): los equipos y procedimientos de radio para emergencias.', 19],
+  ['TRLPEMM', 'Texto refundido de la Ley de Puertos del Estado y de la Marina Mercante (Real Decreto Legislativo 2/2011).', 1],
+  ['VHF', 'Radio de muy alta frecuencia para comunicaciones cercanas. El canal 16 es el de socorro, urgencia y seguridad.', 19],
+  ['Zonas de navegación', 'Las siete zonas en que se puede navegar con recreo, de la 1 (ilimitada) a la 7 (aguas protegidas). El equipo de seguridad obligatorio depende de la zona.', 12],
+  ['Zonas marítimas A1 a A4', 'Áreas de cobertura de radio del SMSSM: A1, VHF de una costera; A2, onda media; A3, satélite Inmarsat; A4, el resto.', 19],
+];
+VIEWS.glosario = {
+  title: 'Glosario',
+  render() {
+    return `<p class="small muted" style="margin:16px 0 8px">Los términos que más se repiten en el temario, explicados en corto. Si un término lleva tema, toca para abrirlo.</p>
+<div class="panel"><dl class="glos">${GLOSARIO.map(g => glosItem(g)).join('')}</dl></div>`;
+  },
+};
+const glosItem = (g, hl) => `<div><dt>${hl ? hl(g[0]) : esc(g[0])}${g[2] ? ` <button class="link small" data-act="go" data-v="topic" data-t="${g[2]}">Tema ${g[2]}</button>` : ''}</dt><dd>${hl ? hl(g[1]) : esc(g[1])}</dd></div>`;
+
+/* --- buscador: fichas, preguntas y glosario --- */
+let IDX = null;
+function indice() {
+  if (IDX) return IDX;
+  IDX = { fichas: [], preg: [] };
+  TOPICS.forEach(t => t.cards.forEach((c, i) => { const p = plainTxt(c.t + '. ' + c.b + (c.tip ? ' ' + c.tip : '')).replace(/\s+/g, ' '); IDX.fichas.push({ t: t.id, i, title: plainTxt(c.t), p, n: normTxt(p) }); }));
+  QUESTIONS.forEach(q => { if (!sirve(q)) return; const p = plainTxt(q.q + ' ' + q.o[q.a]); IDX.preg.push({ q, n: normTxt(p) }); });
+  return IDX;
+}
+function marca(txt, nq) {
+  const n = normTxt(txt); const i = n.indexOf(nq);
+  if (i < 0) return esc(txt);
+  return esc(txt.slice(0, i)) + '<mark>' + esc(txt.slice(i, i + nq.length)) + '</mark>' + esc(txt.slice(i + nq.length));
+}
+function trozo(p, n, nq) {
+  const i = n.indexOf(nq); if (i < 0) return esc(p.slice(0, 160));
+  const a = Math.max(0, i - 60), b = Math.min(p.length, i + nq.length + 100);
+  return (a ? '…' : '') + marca(p.slice(a, b), nq) + (b < p.length ? '…' : '');
+}
+function resultados(q) {
+  const nq = normTxt(q.trim());
+  if (nq.length < 3) return `<p class="small muted">Escribe al menos 3 letras. Prueba con «chaleco», «zona 4», «hipoteca», «MMSI» o «alcohol».</p>
+<button class="btn ghost wide" data-act="go" data-v="glosario">Ver el glosario completo</button>`;
+  const ix = indice();
+  const g = GLOSARIO.filter(x => normTxt(x[0] + ' ' + x[1]).includes(nq)).slice(0, 6);
+  const f = ix.fichas.filter(x => x.n.includes(nq)).slice(0, 15);
+  const pr = ix.preg.filter(x => x.n.includes(nq)).slice(0, 12);
+  if (!g.length && !f.length && !pr.length) return `<p class="small muted">No hay nada con «${esc(q)}». Prueba con otra palabra o sin tildes.</p>`;
+  return (g.length ? `<div class="label">Glosario</div><div class="panel"><dl class="glos">${g.map(x => glosItem(x, s => marca(s, nq))).join('')}</dl></div>` : '') +
+    (f.length ? `<div class="label">En las fichas · ${f.length}${f.length === 15 ? '+' : ''}</div>${f.map(x => `<button class="res" data-act="ficha" data-t="${x.t}" data-c="${x.i}"><span class="mono small muted">TEMA ${x.t} · ${esc(x.title)}</span><span class="small">${trozo(x.p, x.n, nq)}</span></button>`).join('')}` : '') +
+    (pr.length ? `<div class="label">En preguntas de examen · ${pr.length}${pr.length === 12 ? '+' : ''}</div>${pr.map(x => `<div class="res"><span class="mono small muted">TEMA ${x.q.t}${x.q.src === 'oficial' ? ' · ' + esc(x.q.convName || 'oficial') : ' · práctica'}</span><span class="small">${marca(x.q.q, nq)}</span><span class="small" style="color:var(--ok)"><b>Respuesta:</b> ${marca(x.q.o[x.q.a], nq)}</span>${qTools(x.q)}</div>`).join('')}` : '');
+}
+VIEWS.buscar = {
+  title: 'Buscar',
+  render() {
+    return `<div class="buscador"><input type="search" id="bq" class="campo" placeholder="Busca un dato, una norma o un término" value="${esc(S.q || '')}" autocomplete="off" enterkeyhint="search" aria-label="Buscar en el temario"></div>
+<div id="bres">${resultados(S.q || '')}</div>`;
+  },
+  after() {
+    const el = document.getElementById('bq');
+    if (!el) return;
+    if (!('ontouchstart' in window)) el.focus();
+    let tm = null;
+    el.addEventListener('input', () => { clearTimeout(tm); tm = setTimeout(() => { S.q = el.value; document.getElementById('bres').innerHTML = resultados(S.q); }, 180); });
+  },
+};
+
+/* --- recordatorios: archivo de calendario (.ics) --- */
+function icsFecha(k) { return k.replace(/-/g, ''); }
+ACT.ics = () => {
+  const f = examKey();
+  const h = P.recH || 20;
+  const mañana = new Date(); mañana.setDate(mañana.getDate() + 1);
+  const d0 = dayKey(mañana).replace(/-/g, '');
+  const stamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d+/, '');
+  const dia = k => { const n = keyToNum(k) + 1; const dt = new Date(n * 864e5); return `${dt.getUTCFullYear()}${pad(dt.getUTCMonth() + 1)}${pad(dt.getUTCDate())}`; };
+  const ev = [];
+  ev.push(['BEGIN:VEVENT', `UID:rumbo-pper-diario-${stamp}@rumboalexamen.es`, `DTSTAMP:${stamp}`, `DTSTART:${d0}T${pad(h)}0000`, 'DURATION:PT20M',
+    `RRULE:FREQ=DAILY;UNTIL=${icsFecha(f)}T235959`, 'SUMMARY:Rumbo al PPER: tu sesión de hoy', 'DESCRIPTION:Abre https://pper.rumboalexamen.es/ y pulsa Empezar.',
+    'BEGIN:VALARM', 'ACTION:DISPLAY', 'DESCRIPTION:Tu sesión de hoy', 'TRIGGER:PT0M', 'END:VALARM', 'END:VEVENT']);
+  const aprox = f === EXAM.date && EXAM.approx ? ' (fecha aproximada: compruébala en el BOE)' : '';
+  if (f === EXAM.date && keyToNum(EXAM.enrolFrom) > today()) {
+    ev.push(['BEGIN:VEVENT', `UID:rumbo-pper-matricula-${stamp}@rumboalexamen.es`, `DTSTAMP:${stamp}`, `DTSTART;VALUE=DATE:${icsFecha(EXAM.enrolFrom)}`, `DTEND;VALUE=DATE:${dia(EXAM.enrolFrom)}`,
+      `SUMMARY:PPER: se abre la matrícula${aprox}`, `DESCRIPTION:Plazo previsto del ${fmtDate(EXAM.enrolFrom)} al ${fmtDate(EXAM.enrolTo)}. Se hace en la sede electrónica del Ministerio de Transportes.`,
+      'BEGIN:VALARM', 'ACTION:DISPLAY', 'DESCRIPTION:Matrícula del PPER', 'TRIGGER:-P1D', 'END:VALARM', 'END:VEVENT']);
+  }
+  ev.push(['BEGIN:VEVENT', `UID:rumbo-pper-examen-${stamp}@rumboalexamen.es`, `DTSTAMP:${stamp}`, `DTSTART;VALUE=DATE:${icsFecha(f)}`, `DTEND;VALUE=DATE:${dia(f)}`,
+    `SUMMARY:Examen del PPER${aprox}`, 'DESCRIPTION:Lleva tu documento de identidad. Comprueba hora y lugar en la web del Ministerio.',
+    'BEGIN:VALARM', 'ACTION:DISPLAY', 'DESCRIPTION:Examen del PPER', 'TRIGGER:-P7D', 'END:VALARM', 'END:VEVENT']);
+  const txt = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Rumbo al examen//PPER//ES', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH', ...ev.flat(), 'END:VCALENDAR'].join('\r\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([txt], { type: 'text/calendar;charset=utf-8' }));
+  a.download = 'rumbo-pper-recordatorios.ics';
+  document.body.appendChild(a); a.click(); a.remove();
+  toast('Abre el archivo para añadirlo a tu calendario');
+};
+ACT.recH = d => { P.recH = +d.k; save(); rerender(); };
+
+/* --- recorrido guiado --- */
+const TOUR = [
+  ['#hoy', 'Tu sesión de hoy', 'Cada día, la app te dice qué toca. Pulsa el botón y te lleva directamente.'],
+  ['#nota', 'Tu nota estimada', `Lo que sacarías hoy sobre ${EXAM.questions}, según lo que aciertas. Con ${EXAM.pass} se aprueba.`],
+  ['.route', 'La ruta', 'Los 19 temas en orden. Cada uno tiene cinco etapas cortas y se aprueba con un examen del tema.'],
+  ['#tabs', 'El menú', 'Claves: lo que más cae. Repaso: tus fallos y las marcadas. Simulacro: los exámenes oficiales. Bitácora: tu progreso y ajustes. Examen: fechas y requisitos.'],
+  ['#buscar', 'Buscar', 'Cualquier dato, norma o palabra del temario, con un glosario de términos.'],
+];
+let tourI = -1;
+ACT.tour = () => { tab('home'); tourI = 0; setTimeout(tourShow, 60); };
+ACT.tourNext = () => { tourI++; tourShow(); };
+ACT.tourEnd = () => { tourI = TOUR.length; tourShow(); };
+function tourShow() {
+  document.querySelectorAll('.foco').forEach(e => e.classList.remove('foco'));
+  const old = document.getElementById('tour'); if (old) old.remove();
+  if (tourI < 0) return;
+  if (tourI >= TOUR.length) { tourI = -1; P.guia = Object.assign({}, P.guia, { tour: 1 }); save(); rerender(); return; }
+  const [sel, h, txt] = TOUR[tourI];
+  const el = document.querySelector(sel);
+  if (!el) { tourI++; return tourShow(); }
+  el.classList.add('foco');
+  if (sel === '#tabs' || sel === '#buscar') window.scrollTo(0, 0);
+  else { el.scrollIntoView({ block: 'start' }); window.scrollBy(0, -76); }
+  const movil = window.innerWidth < 900;
+  const box = document.createElement('div');
+  box.id = 'tour'; box.className = 'tour' + (movil && sel === '#tabs' ? ' arriba' : ''); box.setAttribute('role', 'dialog'); box.setAttribute('aria-label', 'Recorrido');
+  box.innerHTML = `<div class="mono small muted">${tourI + 1}/${TOUR.length}</div><b>${esc(h)}</b><p>${esc(txt)}</p><div class="btnrow"><button class="btn ghost" data-act="tourEnd">Saltar</button><button class="btn" data-act="tourNext">${tourI === TOUR.length - 1 ? 'Terminar' : 'Siguiente'}</button></div>`;
+  document.body.appendChild(box);
+  box.querySelector('[data-act="tourNext"]').focus({ preventScroll: true });
+}
+
+/* --- Bitácora: plan, recordatorios y ayudas; Examen: lo básico --- */
+const logRender = VIEWS.log.render;
+VIEWS.log.render = function () {
+  const e = planEstado();
+  return `<div class="label">Tu plan</div>
+<div class="panel">${P.plan ? `<b>Examen: ${esc(fmtDate(P.plan.f))}</b> · ${P.plan.d} días de estudio por semana<p class="small ${e && e.c === 'warn' ? 'warnc' : 'muted'}" style="margin:6px 0 0">${esc(e ? e.t : '')}</p>` : '<p class="small muted" style="margin:0">Aún no has puesto la fecha de tu examen.</p>'}
+<button class="btn ghost wide" style="margin-top:12px" data-act="go" data-v="plan">${P.plan ? 'Cambiar el plan' : 'Poner la fecha de mi examen'}</button></div>
+<div class="label">Recordatorios</div>
+<div class="panel"><p class="small" style="margin:0 0 10px">Añade a tu calendario un aviso diario para estudiar, hasta el día del examen, más la matrícula y el examen.</p>
+<div class="row"><span class="grow small">Hora del aviso</span><div class="seg" role="group" aria-label="Hora del aviso">${[9, 14, 20, 22].map(h => `<button class="${(P.recH || 20) === h ? 'on' : ''}" data-act="recH" data-k="${h}">${h}:00</button>`).join('')}</div></div>
+<button class="btn ghost wide" style="margin-top:12px" data-act="ics">Añadir a mi calendario</button></div>
+<div class="label">Ayuda</div>
+<div class="panel"><div class="stack">
+<button class="btn ghost wide" data-act="go" data-v="nivel">Prueba de nivel${P.nivel ? ` · última: ${P.nivel.ok}/${P.nivel.n}` : ''}</button>
+<button class="btn ghost wide" data-act="tour">Recorrido por la app</button>
+<button class="btn ghost wide" data-act="go" data-v="glosario">Glosario de términos</button>
+${P.guia && P.guia.x ? '<button class="btn ghost wide" data-act="guiaOn">Mostrar los primeros pasos en la portada</button>' : ''}
+</div></div>` + logRender.call(this);
+};
+ACT.guiaOn = () => { P.guia = Object.assign({}, P.guia, { x: 0 }); save(); tab('home'); };
+const infoRender = VIEWS.info.render;
+VIEWS.info.render = function () {
+  const MIN = 'https://www.transportes.gob.es/marina-mercante/titulaciones/titulos-profesionales-formacion-maritima-documentos-y-guardia-de-la-gente-de-mar/titulaciones-profesionales/examenes-y-pruebas-nacionales';
+  return `<div class="label">Lo básico, si empiezas de cero</div>
+<div class="panel"><dl class="dl">
+  <dt>Quién</dt><dd>Quien ya tenga el título de <b>Capitán de Yate</b>.</dd>
+  <dt>Apuntarse</dt><dd>En el plazo de matrícula, por la sede electrónica del Ministerio de Transportes («matriculación exprés») o en un registro. Se paga una tasa; el importe y los pasos vienen en la resolución del BOE de cada convocatoria.</dd>
+  <dt>El día</dt><dd>Test de ${EXAM.questions} preguntas en ${EXAM.minutes} minutos. Lleva tu documento de identidad original. La lista de admitidos, la hora y el aula salen antes en la ${ext(MIN, 'web del Ministerio')}.</dd>
+  <dt>Aprobar</dt><dd>${EXAM.pass} aciertos de ${EXAM.questions}. Según las bases, los fallos no restan: no dejes ninguna en blanco.</dd>
+  <dt>Después</dt><dd>Aprobar te permite pedir el certificado, si cumples el resto de requisitos (los tienes más abajo, en «Lo que te da el certificado»).</dd>
+</dl></div>` + infoRender.call(this);
 };
 
 /* ===== Cuentas (solo versión web): registro con verificación del correo y progreso en la nube ===== */
