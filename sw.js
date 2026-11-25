@@ -1,7 +1,7 @@
 /* Rumbo al PPER: funciona sin conexión.
    La app se pide primero a la red (así llegan las actualizaciones) y, si no hay red, sale de la caché.
    Las fuentes de Google se guardan la primera vez que se descargan. */
-const CACHE = 'rumbo-pper-v13';
+const CACHE = 'rumbo-pper-v14';
 const CORE = ['./', './index.html', './manifest.webmanifest', './icon.svg', './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png', './icons/icon-512-maskable.png'];
 
 self.addEventListener('install', event => {
@@ -27,7 +27,7 @@ function networkFirst(request) {
     const finish = res => { if (!done && res) { done = true; resolve(res); } };
     // con mala cobertura, a los 4 s se sirve la copia guardada si la hay
     const timer = setTimeout(() => fromCache(request).then(finish), 4000);
-    fetch(request)
+    fetch(request.url, { cache: 'no-cache', credentials: 'same-origin' }) // salta la caché de 10 min de GitHub Pages
       .then(res => {
         clearTimeout(timer);
         if (res && res.ok) {
